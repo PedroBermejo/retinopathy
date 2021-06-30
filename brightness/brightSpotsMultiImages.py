@@ -1,5 +1,6 @@
 import cv2
 import os
+import numpy as np
 
 read_path = os.path.join(os.getcwd(), 'data', 'sample')
 
@@ -19,6 +20,15 @@ for root, _, files in os.walk(read_path):
         thresh = cv2.erode(thresh, None, iterations=2)
         thresh = cv2.dilate(thresh, None, iterations=4)
 
+        thresh = np.where(thresh != 0, 255, 0)
+        
+        thresh = thresh.astype(np.uint8)
+
+        # guardar 800 + imagenes, guardar original y blanco y negro
+        # investigar sobre segmentacion con imagenes
+        # convertir a pillow y guardar con pillow como tif
+        # estudiar autoencoder
+        # tercer imagen de git guardar con 0, 1, 2 y en tif
         image_write_path = os.path.join(os.getcwd(), 'data', 'output', file_name)
         cv2.imwrite(image_write_path, thresh)
 

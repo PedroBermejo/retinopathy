@@ -21,4 +21,3 @@ cv2.imshow('image', cv2.resize(thresh, (int(thresh.shape[1]/5), int(thresh.shape
 cv2.waitKey(0) 
 
 
-

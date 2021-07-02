@@ -1,0 +1,9 @@
+name: retquality
+channels:
+  - anaconda
+  - defaults
+dependencies:
+  - pillow
+  - pip
+  - pip:
+      - tk-tools

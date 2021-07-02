@@ -1,0 +1,10 @@
+{
+    "0": {
+        "text": "Quality class",
+        "options": [
+            "High quality",
+            "Poor quality",
+            "High quality, but lvl4"
+        ]
+    }
+}

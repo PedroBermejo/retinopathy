@@ -1,0 +1,41 @@
+{
+    "0": {
+        "text": "Artifacts",
+        "options": [
+            "No artifacts",
+            "Artifacts are outside the aortic arch with scope less than 1/4 of the image",
+            "Artifacts do not affect the macular area with range less than 1/4",
+            "Artifacts cover more than 1/4 but less than 1/2 of the image",
+            "Artifacts cover more than 1/2 without fully covering the posterior pole",
+            "Cover the entire posterior pole"
+        ]
+    },
+    "1": {
+        "text": "Clarity",
+        "options": [
+            "Only Level I vascular arch is visible",
+            "Level II vascular arch and a small number of lesions are visible",
+            "Level III vascular arch and some lesions are visible",
+            "Level III vascular arch and most lesions are visible",
+            "Level III vascular arch and all lesions are visible"
+        ]
+    },
+    "2": {
+        "text": "Field Definition",
+        "options": [
+            "Do not include the OD and fovea",
+            "Only contain either OD or fovea",
+            "Only contain either OD or fovea",
+            "Only contain either OD or fovea",
+            "The OD and fovea are within 1 PD of the center"
+        ]
+    },
+    "3": {
+        "text": "Label",
+        "options": [
+            "Good quality",
+            "Acceptable quality",
+            "Bad quality"
+        ]
+    }
+}

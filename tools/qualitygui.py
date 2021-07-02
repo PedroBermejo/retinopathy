@@ -29,6 +29,7 @@ from constants import Components
 class RetinaQualityLabel:
 
     def __init__(self, relabel_mode, sort_mode, image_size, options_file):
+        self.relabel_mode = relabel_mode
         self.root = Tk()
         self.root.title(Components.MAIN_FRAME_TITLE)
         self.root_directory = filedialog.askdirectory()
@@ -53,14 +54,12 @@ class RetinaQualityLabel:
         try:
             self.options_components = json.load(open(options_file))
             self.option_actions = [IntVar() for _ in range(len(self.options_components))]
-
-            if not relabel_mode:
-                self.images_scores = {
-                    image: dict.fromkeys([
-                        option['text'] for _, option in self.options_components.items()
-                    ], 1)
-                    for image in self.images
-                }
+            self.images_scores = {
+                image: dict.fromkeys([
+                    option['text'] for _, option in self.options_components.items()
+                ], 0)
+                for image in self.images
+            }
         except Exception as e:
             mb.showwarning('Yes', 'Incorrect options file!')
             raise ValueError(e)
@@ -107,17 +106,22 @@ class RetinaQualityLabel:
         self.label_image.grid(row=self.__apply_position(), column=1, columnspan=3)
         # Display group of labels
         labelPosition = self.__apply_position()
+        self.buttons = {}
         for index in range(len(self.options_components)):
             text = self.options_components[str(index)]['text']
             options = self.options_components[str(index)]['options']
             action = self.option_actions[index]
             group = LabelFrame(self.root, text=text)
             group.grid(row=labelPosition, column=index, sticky="sw")
-            frame_counter = 1
+            frame_counter = 0
+            radio_options = []
             for option in options:
-                Radiobutton(group, text=option, value=frame_counter-1,
-                            variable=action).grid(row=frame_counter, column=0, columnspan=3)
+                button = Radiobutton(group, text=option, value=frame_counter, variable=action)
+                button.grid(row=frame_counter+1, column=0, columnspan=3)
                 frame_counter += 1
+                radio_options.append(button)
+            self.buttons[text] = radio_options
+        self.__select_options()
         # Display control buttons
         Button(
             self.root, text=Components.BUTTON_BACK_TEXT,
@@ -152,6 +156,7 @@ class RetinaQualityLabel:
         self.label_image.configure(image=image)
         self.label_image.image = image
         self.label_image.grid(row=1, column=1, columnspan=3)
+        self.__select_options()
 
     def __increment_counter(self):
         max_images = len(self.images)
@@ -177,3 +182,19 @@ class RetinaQualityLabel:
         file = open('{}.json'.format(join(self.root_directory, name)), 'w', encoding='utf-8')
         file.write(json.dumps(self.images_scores[image_name], indent=4))
         file.close()
+
+    def __select_options(self):
+        if self.relabel_mode:
+            try:
+                json_name = os.path.splitext(self.images[self.image_index])[0] + '.json'
+                json_file = open(self.root_directory + '/' + json_name)
+                json_image = json.load(json_file)
+                for labelName in json_image:
+                    index = json_image[labelName]
+                    self.buttons[labelName][index].select()
+            except:
+                for labelName in self.buttons:
+                    self.buttons[labelName][0].select()
+        else:
+            for labelName in self.buttons:
+                self.buttons[labelName][0].select()

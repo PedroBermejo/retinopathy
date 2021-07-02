@@ -1,0 +1,37 @@
+{
+    "0": {
+        "text": "Artefactos",
+        "options": [
+            "Visibles",
+            "No visibles"
+        ]
+    },
+    "1": {
+        "text": "Nitidez",
+        "options": [
+            "Nitido",
+            "No nitido"
+        ]
+    },
+    "2": {
+        "text": "Campo de vision",
+        "options": [
+            "Mácula y disco optico visibles",
+            "Mácula o disco optico NO visible(s)"
+        ]
+    },
+    "3": {
+        "text": "Evaluacion general",
+        "options": [
+            "Evaluable",
+            "No evaluable"
+        ]
+    },
+    "4": {
+        "text": "Lesiones graves",
+        "options": [
+            "Visibles",
+            "No visibles"
+        ]
+    }
+}

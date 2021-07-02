@@ -12,6 +12,8 @@ __status__ = "Development"
 
 import os
 import json
+import re
+import sys
 
 from tkinter import *
 from tkinter import filedialog
@@ -26,7 +28,7 @@ from constants import Components
 
 class RetinaQualityLabel:
 
-    def __init__(self, edit_mode, image_size, options_file):
+    def __init__(self, relabel_mode, sort_mode, image_size, options_file):
         self.root = Tk()
         self.root.title(Components.MAIN_FRAME_TITLE)
         self.root_directory = filedialog.askdirectory()
@@ -37,39 +39,55 @@ class RetinaQualityLabel:
         ]
         # Get labeled file names
         self.already_labeled = [
-            image.split('.')[0] + '.' for image in listdir(self.root_directory)
+            image for image in listdir(self.root_directory)
             if re.match(r'[\w,\d]+\.[json|JSON]{4}', image)
         ]
-        if edit_mode:  # Allow to edit the images that were already labeled
+        if not relabel_mode:  # Edit only images not labeled
             self.__discard_images()
-        # Init evaluations to zero for each image
+        if sort_mode:
+            self.__sort_images()
+            # Init evaluations to zero for each image
         self.image_index = 0
         self.component_gui_position = 0
         self.image_size = (image_size, image_size)
         try:
             self.options_components = json.load(open(options_file))
             self.option_actions = [IntVar() for _ in range(len(self.options_components))]
-            self.images_scores = {
-                image: dict.fromkeys([
-                    option['text'] for _, option in self.options_components.items()
-                ], 0)
-                for image in self.images
-            }
+
+            if not relabel_mode:
+                self.images_scores = {
+                    image: dict.fromkeys([
+                        option['text'] for _, option in self.options_components.items()
+                    ], 1)
+                    for image in self.images
+                }
         except Exception as e:
             mb.showwarning('Yes', 'Incorrect options file!')
             raise ValueError(e)
         self.__build_gui()
 
+#image.split('.')[0] + '.' for image in listdir(self.root_directory)    
     def __discard_images(self):
         images_names = {os.path.splitext(x)[0]: x for x in self.images}
-        images_labeled = {os.path.splitext(x)[0] for x in self.already_labeled}
+        images_labeled = {os.path.splitext(x)[0]: x for x in self.already_labeled}
         images_ids = set(images_names.keys())
-        remaining = images_ids - images_labeled
+        images_labeled_ids = set(images_labeled.keys())
+        remaining = images_ids - images_labeled_ids
         self.images = list()
         for current in remaining:
             try:
                 image_name = images_names[current]
                 self.images.append(image_name)
+            except Exception:
+                pass
+
+    def __sort_images(self):
+        images_names = { int(x.split('_')[0]) + 
+            (0.0 if x.split('_')[1].split('.')[0] == 'left' else 0.5) : x for x in self.images }
+        self.images = list()
+        for key in sorted (images_names):
+            try:
+                self.images.append(images_names[key])
             except Exception:
                 pass
 
@@ -82,16 +100,19 @@ class RetinaQualityLabel:
             sys.exit(-1)
         image.thumbnail(self.image_size)
         image = ImageTk.PhotoImage(image)
+        self.image_name = Label(text=self.images[0] + " remaining: " + str(len(self.images)))
+        self.image_name.grid(row=self.__apply_position(), column=1, columnspan=3)
         self.label_image = Label(image=image)
         self.label_image.image = image
         self.label_image.grid(row=self.__apply_position(), column=1, columnspan=3)
         # Display group of labels
+        labelPosition = self.__apply_position()
         for index in range(len(self.options_components)):
             text = self.options_components[str(index)]['text']
             options = self.options_components[str(index)]['options']
             action = self.option_actions[index]
             group = LabelFrame(self.root, text=text)
-            group.grid(row=self.__apply_position(), column=0, columnspan=3)
+            group.grid(row=labelPosition, column=index, sticky="sw")
             frame_counter = 1
             for option in options:
                 Radiobutton(group, text=option, value=frame_counter-1,
@@ -120,12 +141,17 @@ class RetinaQualityLabel:
 
     def __show_image(self, image_name):
         self.label_image.grid_forget()
+        self.image_name.grid_forget()
         image = Image.open(join(self.root_directory, image_name))
         image.thumbnail(self.image_size)
         image = ImageTk.PhotoImage(image)
+        display_name = image_name + " ramaining: " + str(len(self.images) - self.image_index)
+        self.image_name.configure(text=display_name)
+        self.image_name.text = display_name
+        self.image_name.grid(row=0, column=1, columnspan=3)
         self.label_image.configure(image=image)
         self.label_image.image = image
-        self.label_image.grid(row=0, column=1, columnspan=3)
+        self.label_image.grid(row=1, column=1, columnspan=3)
 
     def __increment_counter(self):
         max_images = len(self.images)

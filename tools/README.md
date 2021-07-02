@@ -65,3 +65,7 @@ optional arguments:
 #### Ejemplo
 
 > python maskcreator.py --annot_path /alguna/ruta/de/anotaciones --output_path /alguna/ruta/para/guardar
+
+#### Used now
+
+python qualitylabel.py --relabel-mode --sort_start_int --image-size 800 --options-file options/qualityClasses.json

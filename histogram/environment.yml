@@ -1,0 +1,8 @@
+name: histogram
+channels:
+  - anaconda
+  - defaults
+dependencies:
+  - pip
+  - pip:
+      - matplotlib

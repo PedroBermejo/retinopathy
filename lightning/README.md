@@ -6,3 +6,11 @@ Activación del ambiente:
 
 ```bash
 conda activate lightning
+```
+
+Run tensorboard and view graphs
+
+```bash
+tensorboard --logdir lightning/board/
+```
+

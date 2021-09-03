@@ -136,3 +136,7 @@ dmypy.json
 
 # Intellij
 .idea
+
+# Results
+lightning/board
+lightning/results

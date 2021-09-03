@@ -8,3 +8,4 @@ dependencies:
   - pip:
       - pytorch-lightning
       - torchvision
+      - tensorboard

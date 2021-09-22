@@ -16,7 +16,7 @@ if __name__ == '__main__':
     scriptDir = os.path.dirname(__file__)
     image_name = 'test-data/10_left.jpeg'
     image = Image.open(os.path.join(scriptDir, image_name))
-    image = image.resize((128, 128))
+    image = image.resize((512, 512))
     tensor = functional.to_tensor(image)
     tensor = torch.unsqueeze(tensor, dim=0)
     print(tensor.shape)

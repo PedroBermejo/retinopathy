@@ -6,13 +6,13 @@ import re
 import json
 import shutil
 
-path_images = "/Users/pedro_bermejo/Epam-OneDrive/OneDrive - EPAM/Maestria/retinopatia-dataset/labeled-relaxed/"
+path_images = "/Users/pedro_bermejo/Epam-OneDrive/OneDrive - EPAM/Maestria/retinopatia-dataset/labeled-restricted/"
 path_good_quality_train = "/Users/pedro_bermejo/Documents/Master/retinopathy-dataset/train/good/"
 path_bad_quality_train = "/Users/pedro_bermejo/Documents/Master/retinopathy-dataset/train/bad/"
 path_good_quality_val = "/Users/pedro_bermejo/Documents/Master/retinopathy-dataset/val/good/"
 path_bad_quality_val = "/Users/pedro_bermejo/Documents/Master/retinopathy-dataset/val/bad/"
 
-valRate = 0.1
+valRate = 0.3
 
 # Empty train and val folders
 folders = [path_good_quality_train, 

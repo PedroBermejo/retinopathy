@@ -18,6 +18,6 @@ if __name__ == '__main__':
         filename='model-{epoch:02d}', monitor='val_loss', verbose=True, mode='min'
     )
     trainer = Trainer(
-        max_epochs=10, default_root_dir='lightning/results', logger=[board], callbacks=[checkpoint]
+        max_epochs=5, default_root_dir='lightning/results', logger=[board], callbacks=[checkpoint]
     )
     trainer.fit(model=model)

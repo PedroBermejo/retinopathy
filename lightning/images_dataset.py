@@ -1,6 +1,7 @@
 import torch
 import os
 import cv2
+import re
 
 class Dataset(torch.utils.data.Dataset):
   'Characterizes a dataset for PyTorch'
@@ -8,13 +9,34 @@ class Dataset(torch.utils.data.Dataset):
         'Initialization'
         self.path = path
         self.transform = transform
+        self.labels = {}
+        self.imageNames = []
+        
+        listGoodImages = [
+            os.path.splitext(name)[0] for name in os.listdir(os.path.join(self.path, 'good'))
+            if re.match(r'[\w,\d]+\.[json|JSON]{4}', name)
+        ]
 
-        self.labels = labels
-        self.list_IDs = list_IDs
+        listBadImages = [
+            os.path.splitext(name)[0] for name in os.listdir(os.path.join(self.path, 'bad'))
+            if re.match(r'[\w,\d]+\.[json|JSON]{4}', name)
+        ]
+
+        for name in listGoodImages: 
+            self.labels[name] = 1
+
+        for name in listBadImages: 
+            self.labels[name] = 0
+
+        self.imageNames = listGoodImages + listBadImages
+        #print(self.imageNames)
+        #print(self.labels)
+
+        
 
   def __len__(self):
         'Denotes the total number of samples'
-        return len(self.list_IDs)
+        return len(self.imageNames)
 
   def __getitem__(self, index):
         'Generates one sample of data'

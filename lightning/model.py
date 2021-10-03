@@ -7,8 +7,11 @@ from torch.optim import Adam
 from pytorch_lightning.core import LightningModule
 from pytorch_lightning.metrics.functional import accuracy
 from torch.utils.data import DataLoader
-from torchvision.datasets import ImageFolder
+from torch.utils.data import Dataset
+#from torchvision.datasets import ImageFolder
 from torchvision.transforms import transforms
+import albumentations
+import albumentations.pytorch.transforms as AT
 
 
 class NetModel(LightningModule):
@@ -18,21 +21,19 @@ class NetModel(LightningModule):
         self.train_path = train_path
         self.val_path = val_path
         # Jugar con los kernels
-        self.conv1 = nn.Conv2d(3, 64, 3)
-        self.conv2 = nn.Conv2d(64, 32, 5)
-        self.conv3 = nn.Conv2d(32, 16, 5)
-        self.conv4 = nn.Conv2d(16, 8, 5)
+        self.conv1 = nn.Conv2d(3, 32, 3)
+        self.conv2 = nn.Conv2d(32, 16, 5)
+        self.conv3 = nn.Conv2d(16, 8, 5)
         self.pool = nn.MaxPool2d(2)
         self.relu = nn.ReLU()
         self.softmax = nn.LogSoftmax(1)
         #self.sigm = nn.Sigmoid()
         self.softmax = nn.Softmax(1)
         # Reducir una fc capa, son pesadas
-        self.fc1 = nn.Linear(8 * 28 * 28, 512)
-        self.fc2 = nn.Linear(512, 256)
-        self.fc3 = nn.Linear(256, 128)
-        self.fc4 = nn.Linear(128, 64)
-        self.fc5 = nn.Linear(64, 2)
+        self.fc1 = nn.Linear(8 * 9 * 9, 256)
+        self.fc2 = nn.Linear(256, 128)
+        self.fc3 = nn.Linear(128, 64)
+        self.fc4 = nn.Linear(64, 2)
         # Probar Image Net (200 size?), Inception_v4, ResNet_, MobileNet, EficientNet
         #self.model = models.inception_v3(pretrained=True, aux_logits=False)
         #self.model.fc = nn.Linear(2048, 2)
@@ -43,14 +44,12 @@ class NetModel(LightningModule):
         y = self.pool(self.relu(self.conv1(x)))
         y = self.pool(self.relu(self.conv2(y)))
         y = self.pool(self.relu(self.conv3(y)))
-        y = self.pool(self.relu(self.conv4(y)))
-        #print("Before flatten", y.shape)
-        y = y.view(-1, 8 * 28 * 28)  # Flatten
+        print("Before flatten", y.shape)
+        y = y.view(-1, 8 * 9 * 9)  # Flatten
         y = self.relu(self.fc1(y))
         y = self.relu(self.fc2(y))
         y = self.relu(self.fc3(y))
-        y = self.relu(self.fc4(y))
-        y = self.softmax(self.fc5(y))
+        y = self.softmax(self.fc4(y))
         # y = self.model(x)
         return y
 
@@ -97,7 +96,7 @@ class NetModel(LightningModule):
     # normalizaciones(imagenet), aumentar resolucion imagen 
     def train_dataloader(self):
         transform = transforms.Compose([
-            transforms.Resize([512, 512]),
+            transforms.Resize([100, 100]),
             # ver porcentaje
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
@@ -108,10 +107,10 @@ class NetModel(LightningModule):
 
 
     def val_dataloader(self):
-        transform = transforms.Compose([
-            transforms.Resize([512, 512]),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+        transform = albumentations.Compose([
+            albumentations.Resize(width=256, height=256),
+            albumentations.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            AT.ToTensor()
         ])
         dataset = ImageFolder(root=self.val_path, transform=transform)
         loader = DataLoader(dataset=dataset, shuffle=False, batch_size=4, num_workers=2)

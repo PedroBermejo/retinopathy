@@ -1,7 +1,8 @@
 import torch
 import os
-import cv2
 import re
+from PIL import Image
+import numpy as np
 
 class Dataset(torch.utils.data.Dataset):
   'Characterizes a dataset for PyTorch'
@@ -41,14 +42,19 @@ class Dataset(torch.utils.data.Dataset):
   def __getitem__(self, index):
         'Generates one sample of data'
         # Select sample
-        ID = self.list_IDs[index]
+        ID = self.imageNames[index]
+        y = self.labels[ID]
+        img_name = ''
 
         # Load data and get label
-        img_name = os.path.join(self.path, ID)
-        img = cv2.imread(img_name)
+        if y == 1:
+            img_name = os.path.join(self.path, 'good', ID + '.jpeg')
+        else:
+            img_name = os.path.join(self.path, 'bad', ID + '.jpeg')
+            
+        pillow_image = Image.open(img_name)
+        img = np.array(pillow_image)
         image = self.transform(image=img)
         image = image['image']
-
-        y = self.labels[ID]
 
         return image, y

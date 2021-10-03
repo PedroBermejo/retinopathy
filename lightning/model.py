@@ -1,17 +1,14 @@
 import torch
 import torch.nn as nn
-import torchvision.models as models
-
 from torch.nn.functional import cross_entropy
 from torch.optim import Adam
 from pytorch_lightning.core import LightningModule
 from pytorch_lightning.metrics.functional import accuracy
 from torch.utils.data import DataLoader
-from torch.utils.data import Dataset
-#from torchvision.datasets import ImageFolder
-from torchvision.transforms import transforms
 import albumentations
 import albumentations.pytorch.transforms as AT
+from images_dataset import Dataset
+
 
 
 class NetModel(LightningModule):
@@ -44,7 +41,7 @@ class NetModel(LightningModule):
         y = self.pool(self.relu(self.conv1(x)))
         y = self.pool(self.relu(self.conv2(y)))
         y = self.pool(self.relu(self.conv3(y)))
-        print("Before flatten", y.shape)
+        #print("Before flatten", y.shape)
         y = y.view(-1, 8 * 9 * 9)  # Flatten
         y = self.relu(self.fc1(y))
         y = self.relu(self.fc2(y))
@@ -95,23 +92,22 @@ class NetModel(LightningModule):
     # Probar diferentes transformaciones, cambio de brillo, iluminacion, contraste, desenfoque(blur)
     # normalizaciones(imagenet), aumentar resolucion imagen 
     def train_dataloader(self):
-        transform = transforms.Compose([
-            transforms.Resize([100, 100]),
-            # ver porcentaje
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+        transform = albumentations.Compose([
+            albumentations.Resize(width=100, height=100),
+            albumentations.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            AT.ToTensorV2()
         ])
-        dataset = ImageFolder(root=self.train_path, transform=transform)
+        dataset = Dataset(path=self.train_path, transform=transform)
         loader = DataLoader(dataset=dataset, shuffle=True, batch_size=4, num_workers=2)
         return loader
 
 
     def val_dataloader(self):
         transform = albumentations.Compose([
-            albumentations.Resize(width=256, height=256),
+            albumentations.Resize(width=100, height=100),
             albumentations.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-            AT.ToTensor()
+            AT.ToTensorV2()
         ])
-        dataset = ImageFolder(root=self.val_path, transform=transform)
+        dataset = Dataset(path=self.val_path, transform=transform)
         loader = DataLoader(dataset=dataset, shuffle=False, batch_size=4, num_workers=2)
         return loader

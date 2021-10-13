@@ -1,3 +1,4 @@
+from albumentations.core.composition import OneOf
 import torch
 import torch.nn as nn
 from torch.nn.functional import cross_entropy
@@ -94,6 +95,18 @@ class NetModel(LightningModule):
     def train_dataloader(self):
         transform = albumentations.Compose([
             albumentations.Resize(width=100, height=100),
+            albumentations.OneOf([
+                albumentations.Blur(always_apply=False, p=0.35, blur_limit=(3, 7)),
+                albumentations.RandomBrightnessContrast(always_apply=False, p=0.1, brightness_limit=(-0.2, 0.2), contrast_limit=(-0.2, 0.2), brightness_by_max=True),
+                albumentations.OneOf([
+                    albumentations.RandomFog(always_apply=False, p=0.7, fog_coef_lower=0.1, fog_coef_upper=0.2, alpha_coef=0.08),
+                    albumentations.GaussNoise(always_apply=False, p=0.3, var_limit=(10.0, 50.0)),
+                ], p=0.35),
+                albumentations.OneOf([
+                    albumentations.CLAHE(always_apply=False, p=0.5, clip_limit=(1, 4), tile_grid_size=(8, 8)),
+                    albumentations.Equalize(always_apply=False, p=0.5, mode='pil', by_channels=False),
+                ], p=0.2),
+            ], p=0.25),
             albumentations.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
             AT.ToTensorV2()
         ])

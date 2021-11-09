@@ -4,7 +4,8 @@ import torch.nn as nn
 from torch.nn.functional import cross_entropy
 from torch.optim import Adam
 from pytorch_lightning.core import LightningModule
-from pytorch_lightning.metrics.functional import accuracy
+#from pytorch_lightning.metrics.functional import accuracy
+import torchmetrics
 from torch.utils.data import DataLoader
 import albumentations
 import albumentations.pytorch.transforms as AT
@@ -62,7 +63,7 @@ class NetModel(LightningModule):
         image, target = batch
         y = self(image)
         loss = cross_entropy(y, target)
-        acc = accuracy(y, target)
+        acc = torchmetrics.Accuracy()(y, target)
         self.log('acc', acc, prog_bar=True)
         return {'loss': loss, 'acc': acc}
 
@@ -79,7 +80,7 @@ class NetModel(LightningModule):
         image, target = batch
         y = self(image)
         loss = cross_entropy(y, target)
-        acc = accuracy(y, target)
+        acc = torchmetrics.Accuracy()(y, target)
         return {'loss': loss, 'acc': acc}
 
     def validation_epoch_end(self, outputs):
@@ -94,7 +95,7 @@ class NetModel(LightningModule):
     # Cambiar LR a 0.001, quitar regularizacion, intentar mean=[0, 0, 0], std=[1, 1, 1]
     # Incrementar batch size, hasta 32
     def configure_optimizers(self):
-        optimizer = Adam(self.parameters(), lr=0.00001)
+        optimizer = Adam(self.parameters(), lr=0.0001)
         return optimizer
 
     # Probar diferentes transformaciones, cambio de brillo, iluminacion, contraste, desenfoque(blur)

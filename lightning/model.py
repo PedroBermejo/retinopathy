@@ -19,35 +19,41 @@ class NetModel(LightningModule):
         self.train_path = train_path
         self.val_path = val_path
         # Jugar con los kernels
-        self.conv1 = nn.Conv2d(3, 32, 3)
-        self.conv2 = nn.Conv2d(32, 16, 5)
-        self.conv3 = nn.Conv2d(16, 8, 5)
+        self.conv1 = nn.Conv2d(3, 64, 3)
+        self.conv2 = nn.Conv2d(64, 50, 5)
+        self.conv3 = nn.Conv2d(50, 32, 5)
+        self.conv4 = nn.Conv2d(32, 16, 5)
+        self.conv5 = nn.Conv2d(16, 8, 5)
+        self.conv6 = nn.Conv2d(8, 4, 5)
         self.pool = nn.MaxPool2d(2)
         self.relu = nn.ReLU()
         self.softmax = nn.LogSoftmax(1)
         #self.sigm = nn.Sigmoid()
         self.softmax = nn.Softmax(1)
         # Reducir una fc capa, son pesadas
-        self.fc1 = nn.Linear(8 * 9 * 9, 256)
-        self.fc2 = nn.Linear(256, 128)
-        self.fc3 = nn.Linear(128, 64)
-        self.fc4 = nn.Linear(64, 2)
+        self.fc1 = nn.Linear(4 * 5 * 5, 64)
+        self.fc2 = nn.Linear(64, 32)
+        self.fc3 = nn.Linear(32, 2)
+        self.drop = nn.Dropout(p=0.2)
         # Probar Image Net (200 size?), Inception_v4, ResNet_, MobileNet, EficientNet
         #self.model = models.inception_v3(pretrained=True, aux_logits=False)
         #self.model.fc = nn.Linear(2048, 2)
         # self.model.fc = to
 
     def forward(self, x):
-        # Jugar con el pooling
-        y = self.pool(self.relu(self.conv1(x)))
+        # 2 conv 1 pool, 2 conv 1 pul y 2 conv 1 pool
+        y = self.relu(self.conv1(x))
         y = self.pool(self.relu(self.conv2(y)))
-        y = self.pool(self.relu(self.conv3(y)))
+        y = self.relu(self.conv3(y))
+        y = self.pool(self.relu(self.conv4(y)))
+        y = self.relu(self.conv5(y))
+        y = self.pool(self.relu(self.conv6(y)))
         #print("Before flatten", y.shape)
-        y = y.view(-1, 8 * 9 * 9)  # Flatten
-        y = self.relu(self.fc1(y))
-        y = self.relu(self.fc2(y))
-        y = self.relu(self.fc3(y))
-        y = self.softmax(self.fc4(y))
+        # en las lineales agregar dropout despues de cada lineal, menos ultima
+        y = y.view(-1, 4 * 5 * 5)  # Flatten
+        y = self.drop(self.relu(self.fc1(y)))
+        y = self.drop(self.relu(self.fc2(y)))
+        y = self.softmax(self.fc3(y))
         # y = self.model(x)
         return y
 
@@ -85,9 +91,10 @@ class NetModel(LightningModule):
         }
         self.log_dict(metrics)
 
-    # Jugar con el LR
+    # Cambiar LR a 0.001, quitar regularizacion, intentar mean=[0, 0, 0], std=[1, 1, 1]
+    # Incrementar batch size, hasta 32
     def configure_optimizers(self):
-        optimizer = Adam(self.parameters(), lr=0.0001)
+        optimizer = Adam(self.parameters(), lr=0.00001)
         return optimizer
 
     # Probar diferentes transformaciones, cambio de brillo, iluminacion, contraste, desenfoque(blur)
@@ -96,18 +103,11 @@ class NetModel(LightningModule):
         transform = albumentations.Compose([
             albumentations.Resize(width=100, height=100),
             albumentations.OneOf([
-                albumentations.Blur(always_apply=False, p=0.35, blur_limit=(3, 7)),
-                albumentations.RandomBrightnessContrast(always_apply=False, p=0.1, brightness_limit=(-0.2, 0.2), contrast_limit=(-0.2, 0.2), brightness_by_max=True),
-                albumentations.OneOf([
-                    albumentations.RandomFog(always_apply=False, p=0.7, fog_coef_lower=0.1, fog_coef_upper=0.2, alpha_coef=0.08),
-                    albumentations.GaussNoise(always_apply=False, p=0.3, var_limit=(10.0, 50.0)),
-                ], p=0.35),
-                albumentations.OneOf([
-                    albumentations.CLAHE(always_apply=False, p=0.5, clip_limit=(1, 4), tile_grid_size=(8, 8)),
-                    albumentations.Equalize(always_apply=False, p=0.5, mode='pil', by_channels=False),
-                ], p=0.2),
+                albumentations.Blur(always_apply=False, p=0.5, blur_limit=(3, 7)),
+                albumentations.GaussNoise(always_apply=False, p=0.25, var_limit=(10.0, 50.0)),
+                albumentations.RandomFog(always_apply=False, p=0.25, fog_coef_lower=0.1, fog_coef_upper=0.2, alpha_coef=0.08),
             ], p=0.25),
-            albumentations.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            albumentations.Normalize(mean=[0, 0, 0], std=[1, 1, 1]),
             AT.ToTensorV2()
         ])
         dataset = Dataset(path=self.train_path, transform=transform)
@@ -118,7 +118,7 @@ class NetModel(LightningModule):
     def val_dataloader(self):
         transform = albumentations.Compose([
             albumentations.Resize(width=100, height=100),
-            albumentations.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            albumentations.Normalize(mean=[0, 0, 0], std=[1, 1, 1]),
             AT.ToTensorV2()
         ])
         dataset = Dataset(path=self.val_path, transform=transform)

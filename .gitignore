@@ -139,5 +139,5 @@ dmypy.json
 
 # Results
 lightning/board
-lightning/board2
+lightning/board_albumentations
 lightning/results

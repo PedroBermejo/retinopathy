@@ -1,16 +1,13 @@
-from albumentations.core.composition import OneOf
 import torch
 import torch.nn as nn
 from torch.nn.functional import cross_entropy
 from torch.optim import Adam
 from pytorch_lightning.core import LightningModule
-#from pytorch_lightning.metrics.functional import accuracy
 import torchmetrics
 from torch.utils.data import DataLoader
 import albumentations
 import albumentations.pytorch.transforms as AT
 from images_dataset import Dataset
-
 
 
 class NetModel(LightningModule):
@@ -112,7 +109,7 @@ class NetModel(LightningModule):
             AT.ToTensorV2()
         ])
         dataset = Dataset(path=self.train_path, transform=transform)
-        loader = DataLoader(dataset=dataset, shuffle=True, batch_size=4, num_workers=2)
+        loader = DataLoader(dataset=dataset, shuffle=True, batch_size=4, num_workers=4)
         return loader
 
 
@@ -123,5 +120,5 @@ class NetModel(LightningModule):
             AT.ToTensorV2()
         ])
         dataset = Dataset(path=self.val_path, transform=transform)
-        loader = DataLoader(dataset=dataset, shuffle=False, batch_size=4, num_workers=2)
+        loader = DataLoader(dataset=dataset, shuffle=False, batch_size=4, num_workers=4)
         return loader

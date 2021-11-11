@@ -2,16 +2,14 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 
-from albumentations.core.composition import OneOf
 from torch.nn.functional import cross_entropy
 from torch.optim import Adam
 from pytorch_lightning.core import LightningModule
-#from pytorch_lightning.metrics.functional import accuracy
 import torchmetrics
 from torch.utils.data import DataLoader
-from torchvision.datasets import ImageFolder
-from torchvision.transforms import transforms
-
+import albumentations
+import albumentations.pytorch.transforms as AT
+from images_dataset import Dataset
 
 class NetModel(LightningModule):
 
@@ -22,17 +20,17 @@ class NetModel(LightningModule):
         self.softmax = nn.LogSoftmax(1)
         self.model = models.inception_v3(pretrained=True, aux_logits=False)
         self.model.fc = nn.Linear(2048, 2)
+        self.accuracy = torchmetrics.Accuracy()
 
 
     def forward(self, x):
-        y = self.model(x)
-        return y
+        return self.model(x)
 
     def training_step(self, batch, batch_idx):
         image, target = batch
         y = self(image)
         loss = cross_entropy(y, target)
-        acc = torchmetrics.Accuracy()(y, target)
+        acc = self.accuracy(y, target)
         self.log('acc', acc, prog_bar=True)
         return {'loss': loss, 'acc': acc}
 
@@ -49,7 +47,7 @@ class NetModel(LightningModule):
         image, target = batch
         y = self(image)
         loss = cross_entropy(y, target)
-        acc = torchmetrics.Accuracy()(y, target)
+        acc = self.accuracy(y, target)
         return {'loss': loss, 'acc': acc}
 
     def validation_epoch_end(self, outputs):
@@ -66,22 +64,21 @@ class NetModel(LightningModule):
         return optimizer
 
     def train_dataloader(self):
-        transform = transforms.Compose([
-            transforms.Resize([300, 300]),
-            transforms.RandomRotation(20),
-            transforms.RandomHorizontalFlip(.5),
-            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
-            transforms.ToTensor()
+        transform = albumentations.Compose([
+            albumentations.Resize(width=300, height=300),
+            albumentations.Normalize(mean=[0, 0, 0], std=[1, 1, 1]),
+            AT.ToTensorV2()
         ])
-        dataset = ImageFolder(root=self.train_path, transform=transform)
-        loader = DataLoader(dataset=dataset, shuffle=True, batch_size=4, num_workers=2)
+        dataset = Dataset(path=self.train_path, transform=transform)
+        loader = DataLoader(dataset=dataset, shuffle=True, batch_size=4, num_workers=4)
         return loader
 
     def val_dataloader(self):
-        transform = transforms.Compose([
-            transforms.Resize([300, 300]),
-            transforms.ToTensor()
+        transform = albumentations.Compose([
+            albumentations.Resize(width=300, height=300),
+            albumentations.Normalize(mean=[0, 0, 0], std=[1, 1, 1]),
+            AT.ToTensorV2()
         ])
-        dataset = ImageFolder(root=self.val_path, transform=transform)
-        loader = DataLoader(dataset=dataset, shuffle=False, batch_size=4, num_workers=2)
+        dataset = Dataset(path=self.val_path, transform=transform)
+        loader = DataLoader(dataset=dataset, shuffle=False, batch_size=4, num_workers=4)
         return loader

@@ -3,7 +3,7 @@ import os
 import torchvision.transforms.functional as functional
 
 from PIL import Image
-from model import NetModel
+from model_inceptionV2 import NetModel
 from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader
 from torchvision.transforms import transforms
@@ -16,7 +16,7 @@ if __name__ == '__main__':
     scriptDir = os.path.dirname(__file__)
     image_name = 'test-data/10_left.jpeg'
     image = Image.open(os.path.join(scriptDir, image_name))
-    image = image.resize((100, 100))
+    image = image.resize((300, 300))
     tensor = functional.to_tensor(image)
     tensor = torch.unsqueeze(tensor, dim=0)
     print(tensor.shape)

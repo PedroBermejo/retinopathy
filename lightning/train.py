@@ -1,7 +1,7 @@
 from pytorch_lightning.trainer import Trainer
 from pytorch_lightning.loggers import TensorBoardLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
-from model import NetModel
+from model_mobilenetV2 import NetModel
 
 import os
 

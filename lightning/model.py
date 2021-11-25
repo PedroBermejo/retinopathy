@@ -33,10 +33,11 @@ class NetModel(LightningModule):
         self.fc2 = nn.Linear(64, 32)
         self.fc3 = nn.Linear(32, 2)
         self.drop = nn.Dropout(p=0.2)
-        # Probar Image Net (200 size?), Inception_v4, ResNet_, MobileNet, EficientNet
+        # Probar Image Net (200 size?), Inception_v4(resnet_inception), ResNet_, MobileNetV2, EficientNet
         #self.model = models.inception_v3(pretrained=True, aux_logits=False)
         #self.model.fc = nn.Linear(2048, 2)
         # self.model.fc = to
+        self.accuracy = torchmetrics.Accuracy()
 
     def forward(self, x):
         # 2 conv 1 pool, 2 conv 1 pul y 2 conv 1 pool
@@ -60,7 +61,7 @@ class NetModel(LightningModule):
         image, target = batch
         y = self(image)
         loss = cross_entropy(y, target)
-        acc = torchmetrics.Accuracy()(y, target)
+        acc = self.accuracy(y, target)
         self.log('acc', acc, prog_bar=True)
         return {'loss': loss, 'acc': acc}
 
@@ -77,7 +78,7 @@ class NetModel(LightningModule):
         image, target = batch
         y = self(image)
         loss = cross_entropy(y, target)
-        acc = torchmetrics.Accuracy()(y, target)
+        acc = self.accuracy(y, target)
         return {'loss': loss, 'acc': acc}
 
     def validation_epoch_end(self, outputs):

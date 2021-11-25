@@ -15,12 +15,12 @@ class Dataset(torch.utils.data.Dataset):
         
         listGoodImages = [
             os.path.splitext(name)[0] for name in os.listdir(os.path.join(self.path, 'good'))
-            if re.match(r'[\w,\d]+\.[json|JSON]{4}', name)
+            if re.match(r'[\w,\d]+\.[json|JSON|jpeg]{4}', name)
         ]
 
         listBadImages = [
             os.path.splitext(name)[0] for name in os.listdir(os.path.join(self.path, 'bad'))
-            if re.match(r'[\w,\d]+\.[json|JSON]{4}', name)
+            if re.match(r'[\w,\d]+\.[json|JSON|jpeg]{4}', name)
         ]
 
         for name in listGoodImages: 

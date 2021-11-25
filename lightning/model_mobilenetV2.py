@@ -20,6 +20,7 @@ class NetModel(LightningModule):
         self.val_path = val_path
         self.softmax = nn.LogSoftmax(1)
         self.model = models.mobilenet_v2(pretrained=True)
+        self.model.classifier[1] = nn.Linear(1280, 2)
         self.accuracy = torchmetrics.Accuracy()
 
     def forward(self, x):

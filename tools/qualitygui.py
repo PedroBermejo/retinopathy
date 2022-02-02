@@ -46,7 +46,8 @@ class RetinaQualityLabel:
         if not relabel_mode:  # Edit only images not labeled
             self.__discard_images()
         if sort_mode:
-            self.__sort_images()
+            self.images = sorted(self.images)
+            # self.__sort_images()
             # Init evaluations to zero for each image
         self.image_index = 0
         self.component_gui_position = 0

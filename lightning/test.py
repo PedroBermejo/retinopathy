@@ -3,7 +3,7 @@ import os
 import torchvision.transforms.functional as functional
 
 from PIL import Image
-from model_inceptionV2 import NetModel
+from model_resnet50 import NetModel
 from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader
 from torchvision.transforms import transforms
@@ -13,6 +13,9 @@ if __name__ == '__main__':
     model = NetModel('', '')
     #new_model = model.load_from_checkpoint(checkpoint_path='results/default/3/checkpoints/model-epoch=00.ckpt')
 
+    print(model)
+
+    '''
     scriptDir = os.path.dirname(__file__)
     image_name = 'test-data/10_left.jpeg'
     image = Image.open(os.path.join(scriptDir, image_name))
@@ -27,6 +30,7 @@ if __name__ == '__main__':
     print("y", y)
     print(out.shape)
     print("out", out)
+    '''
 
 '''
     transform = transforms.Compose([

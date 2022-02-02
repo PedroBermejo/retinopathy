@@ -12,5 +12,6 @@ Run tensorboard and view graphs
 
 ```bash
 tensorboard --logdir lightning/board/
+tensorboard --logdir ../../board
 ```
 

@@ -11,21 +11,19 @@ import glob
 import json
 
 
-path_r_labels = "/Users/pedro_bermejo/Epam-OneDrive/OneDrive - EPAM/Maestria/retinopatia-dataset/labels.csv"
-path_copy = "/Users/pedro_bermejo/Epam-OneDrive/OneDrive - EPAM/Maestria/retinopatia-dataset/labeled-copy"
-path_relaxed = "/Users/pedro_bermejo/Epam-OneDrive/OneDrive - EPAM/Maestria/retinopatia-dataset/labeled-relaxed"
-path_restricted = "/Users/pedro_bermejo/Epam-OneDrive/OneDrive - EPAM/Maestria/retinopatia-dataset/labeled-restricted"
+labels_path = "/Users/pedro_bermejo/Epam-OneDrive/OneDrive - EPAM/Maestria/retinopatia-dataset/labels.csv"
+images_path = "/Users/pedro_bermejo/Epam-OneDrive/OneDrive - EPAM/Maestria/retinopatia-dataset/labeled-restricted"
 
 xValues = []
 titleArray = [0, 0, 0, 0, 0]
 
 imageNames = [
-    name for name in listdir(path_restricted)
+    name for name in listdir(images_path)
     if re.match(r'[\w,\d]+\.[json|JSON]{4}', name)
 ]
 
 for name in imageNames:
-    with open(path_r_labels, "r") as infile:
+    with open(labels_path, "r") as infile:
         reader = csv.reader(infile)
         #next(reader)
         find = splitext(name)[0]
@@ -49,7 +47,7 @@ print(len(xValues))
 print(bin_values)
 print(bin_labels)
 
-all_files = glob.glob(path_restricted + '/*.json')
+all_files = glob.glob(images_path + '/*.json')
 
 listDF = []
 

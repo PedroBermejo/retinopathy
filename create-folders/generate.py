@@ -6,20 +6,29 @@ import re
 import json
 import shutil
 
-path_images = "/Users/pedro_bermejo/Epam-OneDrive/OneDrive - EPAM/Maestria/retinopatia-dataset/labeled-restricted/"
-path_good_quality_train = "/Users/pedro_bermejo/Documents/Master/retinopathy-dataset/train/good/"
-path_bad_quality_train = "/Users/pedro_bermejo/Documents/Master/retinopathy-dataset/train/bad/"
-path_good_quality_val = "/Users/pedro_bermejo/Documents/Master/retinopathy-dataset/val/good/"
-path_bad_quality_val = "/Users/pedro_bermejo/Documents/Master/retinopathy-dataset/val/bad/"
+path_images = "/Users/pbermejo/Documents/Master/images/"
+path_good_quality_train = "../retinopathy-dataset/train/good/"
+path_bad_quality_train = "../retinopathy-dataset/train/bad/"
+path_good_quality_val = "../retinopathy-dataset/val/good/"
+path_bad_quality_val = "../retinopathy-dataset/val/bad/"
+path_good_quality_test = "../retinopathy-dataset/test/good/"
+path_bad_quality_test = "../retinopathy-dataset/test/bad/"
 
-valRate = 0.3
+trainRate = 0.70
+valRate = 0.85
+testRate = 1
+
+JPG_EXT = ".jpg"
 
 # Empty train and val folders
-folders = [path_good_quality_train, 
-           path_bad_quality_train, 
-           path_good_quality_val, 
-           path_bad_quality_val]
+folders = [path_images + path_good_quality_train, 
+           path_images + path_bad_quality_train, 
+           path_images + path_good_quality_val, 
+           path_images + path_bad_quality_val,
+           path_images + path_good_quality_test,
+           path_images + path_bad_quality_test]
 
+# Empty folders first
 for folder in folders:
     for filename in listdir(folder):
         file_path = join(folder, filename)
@@ -50,34 +59,47 @@ for name in imageNames:
         else: 
             badQuality.append(name)
 
-countGQ_train, countBQ_train, countGQ_val, countBQ_val = 0, 0, 0, 0
+# print(len(goodQuality))
+# print(len(badQuality))
 
-# Copy image and json to train and val folders
+countGQ_train, countBQ_train, countGQ_val, countBQ_val, countGQ_test, countBQ_test = 0, 0, 0, 0, 0, 0
+
+# Copy image and json to train, val and test folders
 for name in goodQuality:
     rand = random.random()
-    if rand < valRate:
-        shutil.copyfile(path_images + name, path_good_quality_val + name)
-        imageName = splitext(name)[0] + '.jpeg'
-        shutil.copyfile(path_images + imageName, path_good_quality_val + imageName)
+    if rand < trainRate:
+        shutil.copyfile(path_images + name, path_images + path_good_quality_train + name)
+        imageName = splitext(name)[0] + JPG_EXT
+        shutil.copyfile(path_images + imageName, path_images + path_good_quality_train + imageName)
+        countGQ_train += 1
+    elif rand < valRate:
+        shutil.copyfile(path_images + name, path_images + path_good_quality_val + name)
+        imageName = splitext(name)[0] + JPG_EXT
+        shutil.copyfile(path_images + imageName, path_images + path_good_quality_val + imageName)
         countGQ_val += 1
     else:
-        shutil.copyfile(path_images + name, path_good_quality_train + name)
-        imageName = splitext(name)[0] + '.jpeg'
-        shutil.copyfile(path_images + imageName, path_good_quality_train + imageName)
-        countGQ_train += 1
+        shutil.copyfile(path_images + name, path_images + path_good_quality_test + name)
+        imageName = splitext(name)[0] + JPG_EXT
+        shutil.copyfile(path_images + imageName, path_images + path_good_quality_test + imageName)
+        countGQ_test += 1
 
 for name in badQuality:
     rand = random.random()
-    if rand < valRate:
-        shutil.copyfile(path_images + name, path_bad_quality_val + name)
-        imageName = splitext(name)[0] + '.jpeg'
-        shutil.copyfile(path_images + imageName, path_bad_quality_val + imageName)
+    if rand < trainRate:
+        shutil.copyfile(path_images + name, path_images + path_bad_quality_train + name)
+        imageName = splitext(name)[0] + JPG_EXT
+        shutil.copyfile(path_images + imageName, path_images + path_bad_quality_train + imageName)
+        countBQ_train += 1
+    elif rand < valRate:
+        shutil.copyfile(path_images + name, path_images + path_bad_quality_val + name)
+        imageName = splitext(name)[0] + JPG_EXT
+        shutil.copyfile(path_images + imageName, path_images + path_bad_quality_val + imageName)
         countBQ_val += 1
     else:
-        shutil.copyfile(path_images + name, path_bad_quality_train + name)
-        imageName = splitext(name)[0] + '.jpeg'
-        shutil.copyfile(path_images + imageName, path_bad_quality_train + imageName)
-        countBQ_train += 1
+        shutil.copyfile(path_images + name, path_images + path_bad_quality_test + name)
+        imageName = splitext(name)[0] + JPG_EXT
+        shutil.copyfile(path_images + imageName, path_images + path_bad_quality_test + imageName)
+        countBQ_test += 1
 
 
 print("Total Good Quality:", len(goodQuality))
@@ -87,3 +109,5 @@ print("Train Good Quality:", countGQ_train, " {:.2f}".format(100*countGQ_train/l
 print("Train Bad Quality:", countBQ_train, " {:.2f}".format(100*countBQ_train/len(badQuality)), "%")
 print("Validation Good Quality:", countGQ_val, " {:.2f}".format(100*countGQ_val/len(goodQuality)), "%")
 print("Validation Bad Quality:", countBQ_val, " {:.2f}".format(100*countBQ_val/len(badQuality)), "%")
+print("Test Good Quality:", countGQ_test, " {:.2f}".format(100*countGQ_test/len(goodQuality)), "%")
+print("Test Bad Quality:", countBQ_test, " {:.2f}".format(100*countBQ_test/len(badQuality)), "%")

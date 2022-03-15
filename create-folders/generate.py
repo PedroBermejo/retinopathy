@@ -1,10 +1,9 @@
 from os import listdir, unlink
 from os.path import splitext, join, isfile, islink, isdir
-
 import random
-import re
 import json
 import shutil
+import pandas as pd
 
 path_images = "/Users/pbermejo/Documents/Master/images/"
 path_good_quality_train = "../retinopathy-dataset/train/good/"
@@ -13,6 +12,7 @@ path_good_quality_val = "../retinopathy-dataset/val/good/"
 path_bad_quality_val = "../retinopathy-dataset/val/bad/"
 path_good_quality_test = "../retinopathy-dataset/test/good/"
 path_bad_quality_test = "../retinopathy-dataset/test/bad/"
+csv_path = "/Users/pbermejo/Documents/Master/repos/retinopathy/histogram/result.csv"
 
 trainRate = 0.70
 valRate = 0.85
@@ -41,26 +41,25 @@ for folder in folders:
             print('Failed to delete %s. Reason: %s' % (file_path, e))
 
 
-# Get all json files from folder
-imageNames = [
-    name for name in listdir(path_images)
-    if re.match(r'[\w,\d]+\.[json|JSON]{4}', name)
-]
+# Get all image names from csv
+base_csv_DF = pd.read_csv(csv_path)
+
+print(base_csv_DF.head())
+print(base_csv_DF.shape)
 
 goodQuality = []
 badQuality = []
 
-# Split into good a bad qualities
-for name in imageNames:
-    with open(path_images + name) as f:
-        data = json.load(f)
-        if data['Evaluacion general'] == 0:
-            goodQuality.append(name)
-        else: 
-            badQuality.append(name)
+# Number 1 means bad quality, 0 means good quality
+for index, row in base_csv_DF.iterrows():
+    number = row['abraham'] + row['ulises'] + row['pedro']
+    if number >= 2:
+        badQuality.append(row['file_name'])
+    else:
+        goodQuality.append(row['file_name'])
 
-# print(len(goodQuality))
-# print(len(badQuality))
+print("Len good quality: ", len(goodQuality))
+print("Len bad quality: ", len(badQuality))
 
 countGQ_train, countBQ_train, countGQ_val, countBQ_val, countGQ_test, countBQ_test = 0, 0, 0, 0, 0, 0
 

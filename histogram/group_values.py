@@ -26,7 +26,7 @@ for name in imageNames:
         data = json.load(f)
         df = pd.DataFrame(data, index=[0])
         ev_general = str(df.iloc[0]['Evaluacion general']).split('.')[0]
-        base_csv.loc[base_csv['file_name'] == name, 'Pedro'] = ev_general
+        base_csv.loc[base_csv['file_name'] == name, 'pedro'] = ev_general
 
 print(base_csv.head())
 print(base_csv.shape)

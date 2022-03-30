@@ -65,7 +65,7 @@ class NetModel(LightningModule):
 
     def train_dataloader(self):
         transform = albumentations.Compose([
-            albumentations.Resize(width=100, height=100),
+            albumentations.Resize(width=300, height=300),
             albumentations.OneOf([
                 albumentations.Blur(always_apply=False, p=0.5, blur_limit=(3, 7)),
                 albumentations.GaussNoise(always_apply=False, p=0.25, var_limit=(10.0, 50.0)),
@@ -80,7 +80,7 @@ class NetModel(LightningModule):
 
     def val_dataloader(self):
         transform = albumentations.Compose([
-            albumentations.Resize(width=100, height=100),
+            albumentations.Resize(width=300, height=300),
             albumentations.Normalize(mean=[0, 0, 0], std=[1, 1, 1]),
             AT.ToTensorV2()
         ])

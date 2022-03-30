@@ -15,12 +15,12 @@ class Dataset(torch.utils.data.Dataset):
         
         listGoodImages = [
             os.path.splitext(name)[0] for name in os.listdir(os.path.join(self.path, 'good'))
-            if re.match(r'[\w,\d]+\.[json|JSON|jpeg]{4}', name)
+            if re.match(r'[\w,\d]+\.[jpg]{3}', name)
         ]
 
         listBadImages = [
             os.path.splitext(name)[0] for name in os.listdir(os.path.join(self.path, 'bad'))
-            if re.match(r'[\w,\d]+\.[json|JSON|jpeg]{4}', name)
+            if re.match(r'[\w,\d]+\.[jpg]{3}', name)
         ]
 
         for name in listGoodImages: 
@@ -48,9 +48,9 @@ class Dataset(torch.utils.data.Dataset):
 
         # Load data and get label
         if y == 1:
-            img_name = os.path.join(self.path, 'good', ID + '.jpeg')
+            img_name = os.path.join(self.path, 'good', ID + '.jpg')
         else:
-            img_name = os.path.join(self.path, 'bad', ID + '.jpeg')
+            img_name = os.path.join(self.path, 'bad', ID + '.jpg')
             
         pillow_image = Image.open(img_name)
         img = np.array(pillow_image)

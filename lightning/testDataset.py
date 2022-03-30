@@ -2,7 +2,7 @@ from images_dataset import Dataset
 import albumentations
 import albumentations.pytorch.transforms as AT
 
-path = "/Users/pedro_bermejo/Documents/Master/retinopathy-dataset/val"
+path = "/Users/pbermejo/Documents/Master/retinopathy-dataset/val"
 
 transform = albumentations.Compose([
             albumentations.Resize(width=256, height=256),

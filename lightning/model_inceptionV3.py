@@ -13,10 +13,11 @@ from images_dataset import Dataset
 
 class NetModel(LightningModule):
 
-    def __init__(self, train_path, val_path):
+    def __init__(self, train_path, val_path, test_path):
         super(NetModel, self).__init__()
         self.train_path = train_path
         self.val_path = val_path
+        self.test_path = test_path
         self.softmax = nn.LogSoftmax(1)
         self.model = models.inception_v3(pretrained=True, aux_logits=False)
         self.model.fc = nn.Linear(2048, 2)
@@ -59,6 +60,22 @@ class NetModel(LightningModule):
         }
         self.log_dict(metrics)
 
+    def test_step(self, batch, batch_idx):
+        image, target = batch
+        y = self(image)
+        loss = cross_entropy(y, target)
+        acc = self.accuracy(y, target)
+        return {'loss': loss, 'acc': acc}
+
+    def test_epoch_end(self, outputs):
+        avg_loss = torch.stack([output['loss'] for output in outputs]).mean()
+        avg_acc = torch.stack([output['acc'] for output in outputs]).mean()
+        metrics = {
+            'test_loss': avg_loss,
+            'test_acc': avg_acc
+        }
+        self.log_dict(metrics)
+
     def configure_optimizers(self):
         optimizer = Adam(self.parameters(), lr=0.0001)
         return optimizer
@@ -85,5 +102,15 @@ class NetModel(LightningModule):
             AT.ToTensorV2()
         ])
         dataset = Dataset(path=self.val_path, transform=transform)
+        loader = DataLoader(dataset=dataset, shuffle=False, batch_size=4, num_workers=4)
+        return loader
+
+    def test_dataloader(self):
+        transform = albumentations.Compose([
+            albumentations.Resize(width=300, height=300),
+            albumentations.Normalize(mean=[0, 0, 0], std=[1, 1, 1]),
+            AT.ToTensorV2()
+        ])
+        dataset = Dataset(path=self.test_path, transform=transform)
         loader = DataLoader(dataset=dataset, shuffle=False, batch_size=4, num_workers=4)
         return loader

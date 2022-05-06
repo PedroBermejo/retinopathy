@@ -3,6 +3,7 @@ import torch.nn as nn
 import torchvision.models as models
 
 from torch.nn.functional import cross_entropy
+from torch.nn.functional import softmax
 from torch.optim import Adam
 from pytorch_lightning.core import LightningModule
 import torchmetrics
@@ -17,9 +18,12 @@ class NetModel(LightningModule):
         super(NetModel, self).__init__()
         self.train_path = train_path
         self.val_path = val_path
-        self.softmax = nn.LogSoftmax(1)
         self.model = models.vgg19(pretrained=True)
-        self.model.classifier[6] = nn.Linear(4096, 2)
+        #self.model.classifier[6] = nn.Linear(4096, 2)
+        self.model.classifier[6] = nn.Sequential(
+            nn.Linear(4096, 2),
+            nn.LogSoftmax(1)
+        )
         self.accuracy = torchmetrics.Accuracy()
 
     def forward(self, x):
@@ -29,7 +33,7 @@ class NetModel(LightningModule):
         image, target = batch
         y = self(image)
         loss = cross_entropy(y, target)
-        acc = self.accuracy(y, target)
+        acc = self.accuracy(softmax(y, 1), target)
         self.log('acc', acc, prog_bar=True)
         return {'loss': loss, 'acc': acc}
 
@@ -46,7 +50,7 @@ class NetModel(LightningModule):
         image, target = batch
         y = self(image)
         loss = cross_entropy(y, target)
-        acc = self.accuracy(y, target)
+        acc = self.accuracy(softmax(y, 1), target)
         return {'loss': loss, 'acc': acc}
 
     def validation_epoch_end(self, outputs):

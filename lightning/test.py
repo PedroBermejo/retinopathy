@@ -3,7 +3,7 @@ import os
 import torchvision.transforms.functional as functional
 
 from PIL import Image
-from model_resnet50 import NetModel
+from model_inceptionV3 import NetModel
 from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader
 from torchvision.transforms import transforms
@@ -14,6 +14,8 @@ if __name__ == '__main__':
     #new_model = model.load_from_checkpoint(checkpoint_path='results/default/3/checkpoints/model-epoch=00.ckpt')
 
     print(model)
+
+    # model.predict_step()
 
     '''
     scriptDir = os.path.dirname(__file__)

@@ -14,4 +14,5 @@ Run tensorboard and view graphs
 tensorboard --logdir lightning/board/
 tensorboard --logdir ../../board
 ```
+# make good images worst with Blur, GaussNoise and RandomFog, predict and create CSV
 

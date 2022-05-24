@@ -14,7 +14,7 @@ from images_dataset import Dataset
 
 class NetModel(LightningModule):
 
-    def __init__(self, train_path, val_path, test_path):
+    def __init__(self, train_path, val_path):
         super(NetModel, self).__init__()
         self.train_path = train_path
         self.val_path = val_path
@@ -83,14 +83,10 @@ class NetModel(LightningModule):
         optimizer = Adam(self.parameters(), lr=0.0001)
         return optimizer
 
+    # Remove albums that changes black background, only add geometric albums
     def train_dataloader(self):
         transform = albumentations.Compose([
             albumentations.Resize(width=300, height=300),
-            albumentations.OneOf([
-                albumentations.Blur(always_apply=False, p=0.5, blur_limit=(3, 7)),
-                albumentations.GaussNoise(always_apply=False, p=0.25, var_limit=(10.0, 50.0)),
-                albumentations.RandomFog(always_apply=False, p=0.25, fog_coef_lower=0.1, fog_coef_upper=0.2, alpha_coef=0.08),
-            ], p=0.25),
             albumentations.Normalize(mean=[0, 0, 0], std=[1, 1, 1]),
             AT.ToTensorV2()
         ])
@@ -101,6 +97,8 @@ class NetModel(LightningModule):
     def val_dataloader(self):
         transform = albumentations.Compose([
             albumentations.Resize(width=300, height=300),
+            albumentations.HorizontalFlip(always_apply=False, p=0.20),
+            albumentations.Rotate(always_apply=False, limit=(-10, 10), p=0.20),
             albumentations.Normalize(mean=[0, 0, 0], std=[1, 1, 1]),
             AT.ToTensorV2()
         ])

@@ -64,7 +64,7 @@ class NetModel(LightningModule):
         self.log_dict(metrics)
 
     def configure_optimizers(self):
-        optimizer = Adam(self.parameters(), lr=0.0001)
+        optimizer = Adam(self.parameters(), lr=0.00001)
         return optimizer
 
     def train_dataloader(self):

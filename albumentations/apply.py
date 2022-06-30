@@ -20,7 +20,7 @@ sampleGoodImages = random.sample(listGoodImages, 100)
 # print(sampleGoodImages)
 
 transform_blur = A.Compose([
-    A.Blur(always_apply=True, p=1, blur_limit=(13, 17))
+    A.Blur(always_apply=True, p=1, blur_limit=(13, 15))
 ])
 
 transform_gauss_noise = A.Compose([

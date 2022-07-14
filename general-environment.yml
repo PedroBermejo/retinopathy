@@ -1,0 +1,17 @@
+name: retinopathy
+channels:
+  - anaconda
+  - defaults
+dependencies:
+  - pillow
+  - pip
+  - pip:
+      - tk-tools
+      - numpy
+      - pandas
+      - matplotlib
+      - seaborn
+      - pytorch-lightning
+      - torchvision
+      - tensorboard
+      - albumentations

@@ -137,7 +137,8 @@ dmypy.json
 # Intellij
 .idea
 
-# Results
+# Data
 lightning/board
 lightning/board_albumentations
 lightning/results
+retinopathy-dataset/

@@ -57,10 +57,13 @@ def main():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--good-path', help='foo help')
-    parser.add_argument('--good-sample-path', help='foo help')
-    parser.add_argument('--bad-blur-sample-path', help='foo help')
-    parser.add_argument('--bad-gauss-noise-sample-path', help='foo help')
-    parser.add_argument('--bad-random-fog-sample-path', help='foo help')
+    parser.add_argument('--good-path', help='path good quality images')
+    parser.add_argument('--good-sample-path', help='sample of good images')
+    parser.add_argument('--bad-blur-sample-path', help='sample images with blur applied')
+    parser.add_argument('--bad-gauss-noise-sample-path', help='sample images with gauss noise applied')
+    parser.add_argument('--bad-random-fog-sample-path', help='sample images with random fog applied')
+    parser.add_argument('--sample', default='100', help='sample amount')
     args = parser.parse_args()
+    args.sample = int(args.sample)
+
     main()

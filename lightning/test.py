@@ -3,7 +3,7 @@ import os
 import torchvision.transforms.functional as functional
 
 from PIL import Image
-from model_inceptionV3 import NetModel
+from inceptionV3 import NetModel
 from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader
 from torchvision.transforms import transforms

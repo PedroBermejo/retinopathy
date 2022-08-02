@@ -1,4 +1,4 @@
-# retinopathy
+# Retinopathy
 Repository for retinopathy tesis development 
 
 # Albumentations
@@ -22,13 +22,13 @@ It will create folders from --path-images, with train, val and test, inside it w
 python create-folders/generate.py --path-images 'retinopathy-dataset/dataset/' \\\
        --path-images-idrid 'retinopathy-dataset/idrid-crop/idrid_crop/' \\\
        --path-images-messidor 'retinopathy-dataset/messidor-crop/messidor_crop/' \\\
-       --path-good-quality-train = 'retinopathy-dataset/train/good/' \\\
-       --path-bad-quality-train = 'retinopathy-dataset/train/bad/' \\\
-       --path-good-quality-val = 'retinopathy-dataset/val/good/' \\\
-       --path-bad-quality-val = 'retinopathy-dataset/val/bad/' \\\
-       --path-good-quality-test = 'retinopathy-dataset/test/good/' \\\
-       --path-bad-quality-test = 'retinopathy-dataset/test/bad/' \\\
-       --csv-path = 'retinopathy-dataset/result.csv'
+       --path-good-quality-train 'retinopathy-dataset/train/good/' \\\
+       --path-bad-quality-train 'retinopathy-dataset/train/bad/' \\\
+       --path-good-quality-val 'retinopathy-dataset/val/good/' \\\
+       --path-bad-quality-val 'retinopathy-dataset/val/bad/' \\\
+       --path-good-quality-test 'retinopathy-dataset/test/good/' \\\
+       --path-bad-quality-test 'retinopathy-dataset/test/bad/' \\\
+       --csv-path 'retinopathy-dataset/result.csv'
 ```
 It will verify there are no duplicates across different folders
 
@@ -36,3 +36,13 @@ It will verify there are no duplicates across different folders
 python create-folder/verify_no_duplicates.py --base-path 'retinopathy-dataset'
 ```
 
+# Lighning
+
+It will train models using transfer learning, it supports inceptionV3, mobilenetV2, resnet50 and vgg19
+
+```bash
+python lightning/train.py --model 'inceptionV3' \\\
+       --train-path 'retinopathy-dataset/train' \\\
+       --val-path 'retinopathy-dataset/val' \\\
+       --save-path 'retinopathy-dataset/board'
+```

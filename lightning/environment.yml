@@ -3,10 +3,9 @@ channels:
   - anaconda
   - defaults
 dependencies:
-  - pillow
+  - pytorch
+  - torchvision
   - pip
   - pip:
-      - pytorch-lightning
-      - torchvision
-      - tensorboard
       - albumentations
+      - pytorch-lightning

@@ -45,6 +45,10 @@ It will verify there are no duplicates across different folders
 python create-folder/verify_no_duplicates.py --base-path 'retinopathy-dataset'
 ```
 
+# Histogram
+
+Main script: graph_images_only_json.py
+
 # Lighning
 
 It will train models using transfer learning, it supports inceptionV3, mobilenetV2, resnet50 and vgg19
@@ -55,6 +59,22 @@ python lightning/train.py --model inceptionV3 \
        --val-path 'retinopathy-dataset/val' \
        --save-path 'retinopathy-dataset/board'
         
+```
+
+This will load model and get metrics using test folder
+
+```bash
+python lightning/metrics.py --model inceptionV3 \
+       --test-path 'retinopathy-dataset/test' \
+       --model-path 'retinopathy-dataset/boards/board_inceptionV3/default/0/checkpoints/model-inceptionV3-epoch=09.ckpt' 
+        
+```
+
+Run tensorboard and view graphs
+
+
+```bash
+tensorboard --logdir retinopathy-dataset/board/
 ```
 
 # Problems

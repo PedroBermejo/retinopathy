@@ -12,6 +12,7 @@ import albumentations
 import albumentations.pytorch.transforms as AT
 from images_dataset import Dataset
 
+
 class NetModel(LightningModule):
 
     def __init__(self, train_path, val_path):

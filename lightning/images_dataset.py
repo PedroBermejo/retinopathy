@@ -4,42 +4,41 @@ import re
 from PIL import Image
 import numpy as np
 
+
 class Dataset(torch.utils.data.Dataset):
-  'Characterizes a dataset for PyTorch'
-  def __init__(self, path, transform):
+    # Characterizes a dataset for PyTorch'
+    def __init__(self, path, transform):
         'Initialization'
         self.path = path
         self.transform = transform
         self.labels = {}
         self.imageNames = []
         
-        listGoodImages = [
+        good_images = [
             name for name in os.listdir(os.path.join(self.path, 'good'))
             if not re.match(r'[\w,\d]+\.[json]{4}', name)
         ]
 
-        listBadImages = [
+        bad_images = [
             name for name in os.listdir(os.path.join(self.path, 'bad'))
             if not re.match(r'[\w,\d]+\.[json]{4}', name)
         ]
 
-        for name in listGoodImages: 
+        for name in good_images:
             self.labels[name] = 1
 
-        for name in listBadImages: 
+        for name in bad_images:
             self.labels[name] = 0
 
-        self.imageNames = listGoodImages + listBadImages
-        #print(self.imageNames)
-        #print(self.labels)
+        self.imageNames = good_images + bad_images
+        # print(self.imageNames)
+        # print(self.labels)
 
-        
-
-  def __len__(self):
+    def __len__(self):
         'Denotes the total number of samples'
         return len(self.imageNames)
 
-  def __getitem__(self, index):
+    def __getitem__(self, index):
         'Generates one sample of data'
         # Select sample
         ID = self.imageNames[index]

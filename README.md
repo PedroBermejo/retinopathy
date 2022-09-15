@@ -16,10 +16,10 @@ Everything is done inside this repository folder.
 
 ```bash
 python albumentations/apply.py --good-path 'retinopathy-dataset/test/good/' \
-       --good-sample-path 'retinopathy-dataset/test/good_sample/'  \
-       --bad-blur-sample-path 'retinopathy-dataset/test/bad_blur_sample/' \
-       --bad-gauss-noise-sample-path 'retinopathy-dataset/test/bad_gauss_noise_sample/' \
-       --bad-random-fog-sample-path 'retinopathy-dataset/test/bad_random_fog_sample/' \
+       --good-sample-path 'retinopathy-dataset/test/albu/good_sample/'  \
+       --bad-blur-sample-path 'retinopathy-dataset/test/albu/bad_blur_sample/' \
+       --bad-gauss-noise-sample-path 'retinopathy-dataset/test/albu/bad_gauss_noise_sample/' \
+       --bad-random-fog-sample-path 'retinopathy-dataset/test/albu/bad_random_fog_sample/' \
        --sample '100'
 ```
 
@@ -75,6 +75,20 @@ Run tensorboard and view graphs
 
 ```bash
 tensorboard --logdir retinopathy-dataset/board/
+```
+
+This will run predicts over a couple of models
+
+```bash
+python lightning/metrics.py --good-path 'retinopathy-dataset/test' \
+       --blur-path 'retinopathy-dataset/test' \
+       --gauss-path 'retinopathy-dataset/test' \
+       --fog-path 'retinopathy-dataset/test' \
+       --inceptionV3-model-path 'retinopathy-dataset/boards/board_inceptionV3/default/0/checkpoints/model-inceptionV3-epoch=09.ckpt' \
+       --mobilenetV2-model-path 'retinopathy-dataset/boards/board_inceptionV3/default/0/checkpoints/model-inceptionV3-epoch=09.ckpt' \
+       --resnet50-model-path 'retinopathy-dataset/boards/board_inceptionV3/default/0/checkpoints/model-inceptionV3-epoch=09.ckpt' \
+       --vgg19-model-path 'retinopathy-dataset/boards/board_inceptionV3/default/0/checkpoints/model-inceptionV3-epoch=09.ckpt'
+        
 ```
 
 # Problems

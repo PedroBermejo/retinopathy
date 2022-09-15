@@ -5,6 +5,7 @@ import albumentations.pytorch.transforms as AT
 import argparse
 import importlib
 import os
+import pandas as pd
 import time
 
 
@@ -54,9 +55,14 @@ def main():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', help='model name: inceptionV3, mobilenetV2, resnet50, vgg19')
-    parser.add_argument('--test-path', help='path for images for training')
-    parser.add_argument('--model-path', help='Path where checkpoint (model) is saved')
+    parser.add_argument('--good-path', help='path for images for training')
+    parser.add_argument('--blur-path', help='path for images for training')
+    parser.add_argument('--gauss-path', help='path for images for training')
+    parser.add_argument('--fog-path', help='path for images for training')
+    parser.add_argument('--inceptionV3-model-path', help='Path where checkpoint (model) is saved')
+    parser.add_argument('--mobilenetV2-model-path', help='Path where checkpoint (model) is saved')
+    parser.add_argument('--resnet50-model-path', help='Path where checkpoint (model) is saved')
+    parser.add_argument('--vgg19-model-path', help='Path where checkpoint (model) is saved')
 
     args = parser.parse_args()
     main()

@@ -12,6 +12,7 @@ import albumentations
 import albumentations.pytorch.transforms as AT
 from images_dataset import Dataset
 
+
 class NetModel(LightningModule):
 
     def __init__(self, train_path, val_path):
@@ -19,7 +20,7 @@ class NetModel(LightningModule):
         self.train_path = train_path
         self.val_path = val_path
         self.model = models.vgg19(pretrained=True)
-        #self.model.classifier[6] = nn.Linear(4096, 2)
+        # self.model.classifier[6] = nn.Linear(4096, 2)
         self.model.classifier[6] = nn.Sequential(
             nn.Linear(4096, 2),
             nn.LogSoftmax(1)

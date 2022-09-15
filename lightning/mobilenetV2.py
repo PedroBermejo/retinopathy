@@ -14,7 +14,6 @@ from images_dataset import Dataset
 
 
 class NetModel(LightningModule):
-
     def __init__(self, train_path, val_path):
         super(NetModel, self).__init__()
         self.train_path = train_path
@@ -24,7 +23,7 @@ class NetModel(LightningModule):
             nn.Linear(1280, 2),
             nn.LogSoftmax(1)
         )
-        #self.model.classifier[1] = nn.Linear(1280, 2)
+        # self.model.classifier[1] = nn.Linear(1280, 2)
         self.accuracy = torchmetrics.Accuracy()
 
     def forward(self, x):

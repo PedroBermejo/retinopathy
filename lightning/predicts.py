@@ -6,13 +6,27 @@ import argparse
 import importlib
 import os
 import pandas as pd
-import time
 
 
 def main():
-    template_model = getattr(importlib.import_module(args.model), 'NetModel')
-    model = template_model.load_from_checkpoint(os.path.join(os.getcwd(), args.model_path), train_path='', val_path='')
-    print(model)
+    inception_template = getattr(importlib.import_module('inceptionV3'), 'NetModel')
+    mobilenet_template = getattr(importlib.import_module('mobilenetV2'), 'NetModel')
+    resnet_template = getattr(importlib.import_module('resnet50'), 'NetModel')
+    vgg_template = getattr(importlib.import_module('vgg19'), 'NetModel')
+
+    inception_model = inception_template.load_from_checkpoint(os.path.join(os.getcwd(), args.inceptionV3_model_path),
+                                                              train_path='', val_path='')
+    mobilenet_model = mobilenet_template.load_from_checkpoint(os.path.join(os.getcwd(), args.mobilenetV2_model_path),
+                                                              train_path='', val_path='')
+    resnet_model = resnet_template.load_from_checkpoint(os.path.join(os.getcwd(), args.resnet50_model_path),
+                                                        train_path='', val_path='')
+    vgg_model = vgg_template.load_from_checkpoint(os.path.join(os.getcwd(), args.vgg19_model_path),
+                                                  train_path='', val_path='')
+
+    # print(inception_model)
+    # print(mobilenet_model)
+    # print(resnet_model)
+    # print(vgg_model)
 
     transform = A.Compose([
         A.Resize(width=300, height=300),
@@ -20,16 +34,33 @@ def main():
         AT.ToTensorV2()
     ])
 
-    dataset = Dataset(path=os.path.join(os.getcwd(), args.test_path), transform=transform)
-    loader = DataLoader(dataset=dataset, shuffle=False, batch_size=100, num_workers=4)
+    good_dataset = Dataset(path=os.path.join(os.getcwd(), args.good_path), transform=transform)
+    blur_dataset = Dataset(path=os.path.join(os.getcwd(), args.blur_path), transform=transform)
+    gauss_dataset = Dataset(path=os.path.join(os.getcwd(), args.gauss_path), transform=transform)
+    fog_dataset = Dataset(path=os.path.join(os.getcwd(), args.fog_path), transform=transform)
 
-    images, labels = next(iter(loader))
-    print(len(images))
-    print(images[0])
-    print(len(labels))
-    print(labels[0])
+    good_loader = DataLoader(dataset=good_dataset, shuffle=False, batch_size=100, num_workers=4)
+    blur_loader = DataLoader(dataset=blur_dataset, shuffle=False, batch_size=100, num_workers=4)
+    gauss_loader = DataLoader(dataset=gauss_dataset, shuffle=False, batch_size=100, num_workers=4)
+    fog_loader = DataLoader(dataset=fog_dataset, shuffle=False, batch_size=100, num_workers=4)
 
-    start_time = time.time()
+    loaders = {
+        'good_images': good_loader,
+        'blur': blur_loader,
+        'gauss_noise': gauss_loader,
+        'random_fog': fog_loader
+    }
+
+    for name, loader in loaders:
+        images, labels = next(iter(loader))
+        print(name)
+        print(len(images))
+        print(images[0])
+        print(len(labels))
+        print(labels[0])
+        print()
+
+    '''
 
     predicted = []
     all_labels = []
@@ -41,7 +72,6 @@ def main():
 
     print(len(predicted))
     print(len(all_labels))
-    print('Predict took {} seconds'.format(int(time.time() - start_time)))
 
     from sklearn.metrics import classification_report
     from sklearn.metrics import confusion_matrix
@@ -51,6 +81,7 @@ def main():
 
     print("Print classification report")
     print(classification_report(all_labels, predicted))
+    '''
 
 
 if __name__ == '__main__':

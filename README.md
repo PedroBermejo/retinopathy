@@ -80,14 +80,14 @@ tensorboard --logdir retinopathy-dataset/board/
 This will run predicts over a couple of models
 
 ```bash
-python lightning/metrics.py --good-path 'retinopathy-dataset/test' \
-       --blur-path 'retinopathy-dataset/test' \
-       --gauss-path 'retinopathy-dataset/test' \
-       --fog-path 'retinopathy-dataset/test' \
-       --inceptionV3-model-path 'retinopathy-dataset/boards/board_inceptionV3/default/0/checkpoints/model-inceptionV3-epoch=09.ckpt' \
-       --mobilenetV2-model-path 'retinopathy-dataset/boards/board_inceptionV3/default/0/checkpoints/model-inceptionV3-epoch=09.ckpt' \
-       --resnet50-model-path 'retinopathy-dataset/boards/board_inceptionV3/default/0/checkpoints/model-inceptionV3-epoch=09.ckpt' \
-       --vgg19-model-path 'retinopathy-dataset/boards/board_inceptionV3/default/0/checkpoints/model-inceptionV3-epoch=09.ckpt'
+python lightning/predicts.py --good-path 'retinopathy-dataset/test/albu/good_sample' \
+       --blur-path 'retinopathy-dataset/test/albu/bad_blur_sample_crop' \
+       --gauss-path 'retinopathy-dataset/test/albu/bad_gauss_noise_sample_crop' \
+       --fog-path 'retinopathy-dataset/test/albu/bad_random_fog_sample_crop' \
+       --inceptionV3-model-path 'retinopathy-dataset/boards/checkpoints_5/model-inceptionV3-epoch=11.ckpt' \
+       --mobilenetV2-model-path 'retinopathy-dataset/boards/checkpoints_1/model-mobilenetV2-epoch=03.ckpt' \
+       --resnet50-model-path 'retinopathy-dataset/boards/checkpoints_2/model-resnet50-epoch=13.ckpt' \
+       --vgg19-model-path 'retinopathy-dataset/boards/checkpoints_3/model-vgg19-epoch=03.ckpt'
         
 ```
 

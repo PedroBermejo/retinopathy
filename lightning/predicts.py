@@ -1,4 +1,4 @@
-from images_dataset import Dataset
+from images_dataset_predict import Dataset
 from torch.utils.data import DataLoader
 import albumentations as A
 import albumentations.pytorch.transforms as AT
@@ -23,10 +23,17 @@ def main():
     vgg_model = vgg_template.load_from_checkpoint(os.path.join(os.getcwd(), args.vgg19_model_path),
                                                   train_path='', val_path='')
 
-    # print(inception_model)
-    # print(mobilenet_model)
-    # print(resnet_model)
-    # print(vgg_model)
+    models = {
+        'inception': inception_model,
+        'mobilenet': mobilenet_model,
+        'resnet': resnet_model,
+        'vgg': vgg_model
+    }
+
+    # for name, model in models.items():
+    #     print(name)
+    #     print(model)
+    #     print()
 
     transform = A.Compose([
         A.Resize(width=300, height=300),
@@ -34,10 +41,10 @@ def main():
         AT.ToTensorV2()
     ])
 
-    good_dataset = Dataset(path=os.path.join(os.getcwd(), args.good_path), transform=transform)
-    blur_dataset = Dataset(path=os.path.join(os.getcwd(), args.blur_path), transform=transform)
-    gauss_dataset = Dataset(path=os.path.join(os.getcwd(), args.gauss_path), transform=transform)
-    fog_dataset = Dataset(path=os.path.join(os.getcwd(), args.fog_path), transform=transform)
+    good_dataset = Dataset(os.path.join(os.getcwd(), args.good_path), transform, 1)
+    blur_dataset = Dataset(os.path.join(os.getcwd(), args.blur_path), transform, 0)
+    gauss_dataset = Dataset(os.path.join(os.getcwd(), args.gauss_path), transform, 0)
+    fog_dataset = Dataset(os.path.join(os.getcwd(), args.fog_path), transform, 0)
 
     good_loader = DataLoader(dataset=good_dataset, shuffle=False, batch_size=100, num_workers=4)
     blur_loader = DataLoader(dataset=blur_dataset, shuffle=False, batch_size=100, num_workers=4)
@@ -51,37 +58,23 @@ def main():
         'random_fog': fog_loader
     }
 
-    for name, loader in loaders:
-        images, labels = next(iter(loader))
-        print(name)
-        print(len(images))
-        print(images[0])
-        print(len(labels))
-        print(labels[0])
-        print()
+    # for name, loader in loaders.items():
+    #     images, labels, image_names = next(iter(loader))
+    #     print(name)
+    #     print("Length: ", len(images))
+    #     print("Label: ", labels[0])
+    #     print("Image_name: ", image_names[0])
+    #     print()
 
-    '''
-
-    predicted = []
-    all_labels = []
-    for images, labels in iter(loader):
-        predict = model(images)
-        predict = [0 if value[0] > value[1] else 1 for value in predict]
-        predicted = predicted + predict
-        all_labels = all_labels + labels.detach().numpy().tolist()
-
-    print(len(predicted))
-    print(len(all_labels))
-
-    from sklearn.metrics import classification_report
-    from sklearn.metrics import confusion_matrix
-
-    print("Print confussion matrix")
-    print(confusion_matrix(all_labels, predicted))
-
-    print("Print classification report")
-    print(classification_report(all_labels, predicted))
-    '''
+    for loader_name, loader in loaders.items():
+        images, labels, image_names = next(iter(loader))
+        for model_name, model in models.items():
+            predicts = model(images)
+            predicts = [0 if value[0] > value[1] else 1 for value in predicts]
+            print(loader_name)
+            print(model_name)
+            print(predicts)
+            print()
 
 
 if __name__ == '__main__':

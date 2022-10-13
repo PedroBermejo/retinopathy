@@ -87,7 +87,8 @@ python lightning/predicts.py --good-path 'retinopathy-dataset/test/albu/good_sam
        --inceptionV3-model-path 'retinopathy-dataset/boards/checkpoints_5/model-inceptionV3-epoch=11.ckpt' \
        --mobilenetV2-model-path 'retinopathy-dataset/boards/checkpoints_1/model-mobilenetV2-epoch=03.ckpt' \
        --resnet50-model-path 'retinopathy-dataset/boards/checkpoints_2/model-resnet50-epoch=13.ckpt' \
-       --vgg19-model-path 'retinopathy-dataset/boards/checkpoints_3/model-vgg19-epoch=03.ckpt'
+       --vgg19-model-path 'retinopathy-dataset/boards/checkpoints_3/model-vgg19-epoch=03.ckpt' \
+       --path-to-csv 'retinopathy-dataset/boards/predicts.csv'
         
 ```
 

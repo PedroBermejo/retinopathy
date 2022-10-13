@@ -66,15 +66,22 @@ def main():
     #     print("Image_name: ", image_names[0])
     #     print()
 
+    df = pd.DataFrame()
     for loader_name, loader in loaders.items():
         images, labels, image_names = next(iter(loader))
         for model_name, model in models.items():
-            predicts = model(images)
-            predicts = [0 if value[0] > value[1] else 1 for value in predicts]
-            print(loader_name)
-            print(model_name)
-            print(predicts)
-            print()
+            probability = model(images)
+            predicts = [0 if value[0] > value[1] else 1 for value in probability]
+            # print(loader_name)
+            # print(model_name)
+            # print(predicts)
+            # print()
+            df[f'{loader_name}_{model_name}_names'] = image_names
+            df[f'{loader_name}_{model_name}_probability_left'] = probability.detach().numpy()[:, 0]
+            df[f'{loader_name}_{model_name}_probability_right'] = probability.detach().numpy()[:, 1]
+            df[f'{loader_name}_{model_name}_predicts'] = predicts
+
+    df.to_csv(os.path.join(os.getcwd(), args.path_to_csv))
 
 
 if __name__ == '__main__':
@@ -87,7 +94,7 @@ if __name__ == '__main__':
     parser.add_argument('--mobilenetV2-model-path', help='Path where checkpoint (model) is saved')
     parser.add_argument('--resnet50-model-path', help='Path where checkpoint (model) is saved')
     parser.add_argument('--vgg19-model-path', help='Path where checkpoint (model) is saved')
+    parser.add_argument('--path-to-csv', help='Path where to save csv')
 
     args = parser.parse_args()
     main()
-

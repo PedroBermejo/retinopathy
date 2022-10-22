@@ -15,12 +15,10 @@ It will take images in --good-path and take a sample of --sample number. It will
 Everything is done inside this repository folder.
 
 ```bash
-python albumentations/apply.py --good-path 'retinopathy-dataset/test/good/' \
-       --good-sample-path 'retinopathy-dataset/test/albu/good_sample/'  \
-       --bad-blur-sample-path 'retinopathy-dataset/test/albu/bad_blur_sample/' \
-       --bad-gauss-noise-sample-path 'retinopathy-dataset/test/albu/bad_gauss_noise_sample/' \
-       --bad-random-fog-sample-path 'retinopathy-dataset/test/albu/bad_random_fog_sample/' \
-       --sample '100'
+python albumentations/apply.py --good-path 'retinopathy-dataset/albu_images/good_sample/' \
+       --bad-blur-sample-path 'retinopathy-dataset/albu_images/bad_blur_sample/' \
+       --bad-gauss-noise-sample-path 'retinopathy-dataset/albu_images/bad_gauss_noise_sample/' \
+       --bad-random-fog-sample-path 'retinopathy-dataset/albu_images/bad_random_fog_sample/'
 ```
 
 # Create-folders 
@@ -43,6 +41,14 @@ It will verify there are no duplicates across different folders
 
 ```bash
 python create-folder/verify_no_duplicates.py --base-path 'retinopathy-dataset'
+```
+
+The following will first clear folders inside 'ablu_images', then it will subtract images used to train the models from the dataset with all images, it will just consider good quality images:
+
+```bash
+python create-folders/goodImages.py --path-all-images 'retinopathy-dataset/data_3_labels_idrid_messidor/' \
+       --path-used-images 'retinopathy-dataset/data_3_labels_idrid_messidor_balanced/'  \
+       --path-save-difference 'retinopathy-dataset/albu_images/' 
 ```
 
 # Histogram
@@ -80,10 +86,10 @@ tensorboard --logdir retinopathy-dataset/board/
 This will run predicts over a couple of models
 
 ```bash
-python lightning/predicts.py --good-path 'retinopathy-dataset/test/albu/good_sample' \
-       --blur-path 'retinopathy-dataset/test/albu/bad_blur_sample_crop' \
-       --gauss-path 'retinopathy-dataset/test/albu/bad_gauss_noise_sample_crop' \
-       --fog-path 'retinopathy-dataset/test/albu/bad_random_fog_sample_crop' \
+python lightning/predicts.py --good-path 'retinopathy-dataset/albu_images/good_sample' \
+       --blur-path 'retinopathy-dataset/albu_images/bad_blur_sample_crop' \
+       --gauss-path 'retinopathy-dataset/albu_images/bad_gauss_noise_sample_crop' \
+       --fog-path 'retinopathy-dataset/albu_images/bad_random_fog_sample_crop' \
        --inceptionV3-model-path 'retinopathy-dataset/boards/checkpoints_5/model-inceptionV3-epoch=11.ckpt' \
        --mobilenetV2-model-path 'retinopathy-dataset/boards/checkpoints_1/model-mobilenetV2-epoch=03.ckpt' \
        --resnet50-model-path 'retinopathy-dataset/boards/checkpoints_2/model-resnet50-epoch=13.ckpt' \

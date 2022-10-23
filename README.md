@@ -98,6 +98,16 @@ python lightning/predicts.py --good-path 'retinopathy-dataset/albu_images/good_s
         
 ```
 
+# Cropper
+
+It will remove background noise, attempting to make completely black background
+
+```bash
+python crop/run.py --model_path 'retinopathy-dataset/albu_images/segmenter.ckpt' \
+       --src 'retinopathy-dataset/albu_images/bad_blur_sample/,retinopathy-dataset/albu_images/bad_gauss_noise_sample/,retinopathy-dataset/albu_images/bad_random_fog_sample/' \
+       --dst 'retinopathy-dataset/albu_images/bad_blur_sample_crop/,retinopathy-dataset/albu_images/bad_gauss_noise_sample_crop/,retinopathy-dataset/albu_images/bad_random_fog_sample_crop/' 
+```
+
 # Problems
 
 Exception in lightning:

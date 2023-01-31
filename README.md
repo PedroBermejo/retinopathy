@@ -94,7 +94,7 @@ python lightning/predicts.py --good-path 'retinopathy-dataset/albu_images/good_s
        --mobilenetV2-model-path 'retinopathy-dataset/boards/checkpoints_1/model-mobilenetV2-epoch=03.ckpt' \
        --resnet50-model-path 'retinopathy-dataset/boards/checkpoints_2/model-resnet50-epoch=13.ckpt' \
        --vgg19-model-path 'retinopathy-dataset/boards/checkpoints_3/model-vgg19-epoch=03.ckpt' \
-       --path-to-csv 'retinopathy-dataset/boards/predicts.csv'
+       --path-to-csv 'retinopathy-dataset/boards/predicts'
         
 ```
 

@@ -1,3 +1,5 @@
+import torch
+
 from images_dataset_predict import Dataset
 from torch.utils.data import DataLoader
 import albumentations as A
@@ -8,33 +10,7 @@ import os
 import pandas as pd
 
 
-def main():
-    inception_template = getattr(importlib.import_module('inceptionV3'), 'NetModel')
-    mobilenet_template = getattr(importlib.import_module('mobilenetV2'), 'NetModel')
-    resnet_template = getattr(importlib.import_module('resnet50'), 'NetModel')
-    vgg_template = getattr(importlib.import_module('vgg19'), 'NetModel')
-
-    inception_model = inception_template.load_from_checkpoint(os.path.join(os.getcwd(), args.inceptionV3_model_path),
-                                                              train_path='', val_path='')
-    mobilenet_model = mobilenet_template.load_from_checkpoint(os.path.join(os.getcwd(), args.mobilenetV2_model_path),
-                                                              train_path='', val_path='')
-    resnet_model = resnet_template.load_from_checkpoint(os.path.join(os.getcwd(), args.resnet50_model_path),
-                                                        train_path='', val_path='')
-    vgg_model = vgg_template.load_from_checkpoint(os.path.join(os.getcwd(), args.vgg19_model_path),
-                                                  train_path='', val_path='')
-
-    models = {
-        'inception': inception_model,
-        'mobilenet': mobilenet_model,
-        'resnet': resnet_model,
-        'vgg': vgg_model
-    }
-
-    # for name, model in models.items():
-    #     print(name)
-    #     print(model)
-    #     print()
-
+def get_dataset_loaders():
     transform = A.Compose([
         A.Resize(width=300, height=300),
         A.Normalize(mean=[0, 0, 0], std=[1, 1, 1]),
@@ -57,6 +33,41 @@ def main():
         'gauss_noise': gauss_loader,
         'random_fog': fog_loader
     }
+    return loaders
+
+
+def inception_model():
+    inception_template = getattr(importlib.import_module('inceptionV3'), 'NetModel')
+    return inception_template.load_from_checkpoint(os.path.join(os.getcwd(), args.inceptionV3_model_path),
+                                                              train_path='', val_path='')
+
+
+def mobilenet_model():
+    mobilenet_template = getattr(importlib.import_module('mobilenetV2'), 'NetModel')
+    return mobilenet_template.load_from_checkpoint(os.path.join(os.getcwd(), args.mobilenetV2_model_path),
+                                                          train_path='', val_path='')
+
+
+def resnet_model():
+    resnet_template = getattr(importlib.import_module('resnet50'), 'NetModel')
+    return resnet_template.load_from_checkpoint(os.path.join(os.getcwd(), args.resnet50_model_path),
+                                                        train_path='', val_path='')
+
+
+def vgg_model():
+    vgg_template = getattr(importlib.import_module('vgg19'), 'NetModel')
+    return vgg_template.load_from_checkpoint(os.path.join(os.getcwd(), args.vgg19_model_path),
+                                                  train_path='', val_path='')
+
+
+
+def main():
+    models = {
+        'inception': inception_model,
+        'mobilenet': mobilenet_model,
+        'resnet': resnet_model,
+        'vgg': vgg_model
+    }
 
     # for name, loader in loaders.items():
     #     images, labels, image_names = next(iter(loader))
@@ -66,22 +77,28 @@ def main():
     #     print("Image_name: ", image_names[0])
     #     print()
 
-    df = pd.DataFrame()
-    for loader_name, loader in loaders.items():
-        images, labels, image_names = next(iter(loader))
-        for model_name, model in models.items():
-            probability = model(images)
-            predicts = [0 if value[0] > value[1] else 1 for value in probability]
-            # print(loader_name)
-            # print(model_name)
-            # print(predicts)
-            # print()
-            df[f'{loader_name}_{model_name}_names'] = image_names
-            df[f'{loader_name}_{model_name}_probability_left'] = probability.detach().numpy()[:, 0]
-            df[f'{loader_name}_{model_name}_probability_right'] = probability.detach().numpy()[:, 1]
-            df[f'{loader_name}_{model_name}_predicts'] = predicts
+    for model_name, model_function in models.items():
+        df = pd.DataFrame()
+        model = model_function()
+        loaders = get_dataset_loaders()
+        print(model_name)
+        for loader_name, loader in loaders.items():
+            print(loader_name)
+            for images, labels, image_names in iter(loader):
+                probability = model(images)
+                torch.exp(probability)
+                predicts = [0 if value[0] > value[1] else 1 for value in probability]
+                # print(predicts)
+                temp = pd.DataFrame()
+                temp[f'{loader_name}_{model_name}_names'] = image_names
+                temp[f'{loader_name}_{model_name}_probability_left'] = probability.detach().numpy()[:, 0]
+                temp[f'{loader_name}_{model_name}_probability_right'] = probability.detach().numpy()[:, 1]
+                temp[f'{loader_name}_{model_name}_predicts'] = predicts
+                frames = [df, temp]
+                df = pd.concat(frames, ignore_index=True)
+                print(len(df.index))
 
-    df.to_csv(os.path.join(os.getcwd(), args.path_to_csv))
+        df.to_csv(os.path.join(os.getcwd(), args.path_to_csv + model_name + '.csv'))
 
 
 if __name__ == '__main__':

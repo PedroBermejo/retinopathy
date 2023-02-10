@@ -88,6 +88,7 @@ def main():
                 probability = model(images)
                 torch.exp(probability)
                 predicts = [0 if value[0] > value[1] else 1 for value in probability]
+                # Transformar valores.
                 # print(predicts)
                 temp = pd.DataFrame()
                 temp[f'{loader_name}_{model_name}_names'] = image_names

@@ -98,6 +98,17 @@ python lightning/predicts.py --good-path 'retinopathy-dataset/albu_images/good_s
         
 ```
 
+This will run predicts over a couple of models
+
+```bash
+python lightning/formatPredicts.py --inception-predicts 'retinopathy-dataset/boards/predictsinception.csv' \
+       --mobilenet-predicts 'retinopathy-dataset/boards/predictsmobilenet.csv' \
+       --resnet-predicts 'retinopathy-dataset/boards/predictsresnet.csv' \
+       --vgg-predicts 'retinopathy-dataset/boards/predictsvgg.csv' \
+       --output 'retinopathy-dataset/boards/predicts.csv' 
+        
+```
+
 # Cropper
 
 It will remove background noise, attempting to make completely black background

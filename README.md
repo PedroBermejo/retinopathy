@@ -55,6 +55,12 @@ python create-folders/goodImages.py --path-all-images 'retinopathy-dataset/data_
 
 Main script: graph_images_only_json.py
 
+This will create box plots over the softmax probabilities.
+
+```bash
+python histogram/boxplot.py --path-predicts 'retinopathy-dataset/boards/predicts.csv'      
+```
+
 # Lighning
 
 It will train models using transfer learning, it supports inceptionV3, mobilenetV2, resnet50 and vgg19
@@ -98,7 +104,7 @@ python lightning/predicts.py --good-path 'retinopathy-dataset/albu_images/good_s
         
 ```
 
-This will run predicts over a couple of models
+This will format predicts csv
 
 ```bash
 python lightning/formatPredicts.py --inception-predicts 'retinopathy-dataset/boards/predictsinception.csv' \

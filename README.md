@@ -61,6 +61,14 @@ This will create box plots over the softmax probabilities.
 python histogram/boxplot.py --path-predicts 'retinopathy-dataset/boards/predicts.csv'      
 ```
 
+This will read all labels in json files linked to each image in the kaggle dataset and count the numbers 
+for the labels
+
+```bash
+python histogram/graph_csv_rLabel.py --path-datasets 'retinopathy-dataset/data_3_labels'      
+```
+
+
 # Lighning
 
 It will train models using transfer learning, it supports inceptionV3, mobilenetV2, resnet50 and vgg19
@@ -86,7 +94,7 @@ Run tensorboard and view graphs
 
 
 ```bash
-tensorboard --logdir retinopathy-dataset/board/
+tensorboard --logdir retinopathy-dataset/lightning_logs/
 ```
 
 This will run predicts over a couple of models

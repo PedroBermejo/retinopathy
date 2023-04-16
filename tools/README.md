@@ -68,7 +68,7 @@ optional arguments:
 
 #### Used now
 
-python qualitylabel.py --relabel-mode --sort_start_int --image-size 800 --options-file options/qualityClasses.json
+python tools/qualitylabel.py --relabel-mode --sort_start_int --image-size 500 --options-file tools/options/qualityClasses.json
 
 python qualitylabel.py --sort_start_int --image-size 800 --options-file options/qualityClasses.json
 

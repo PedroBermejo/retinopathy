@@ -1,83 +1,53 @@
-from os import listdir
-from os.path import splitext
+import argparse
 import re
-import csv
 import os
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import glob
 import json
 
+from os import listdir
 
-labels_path = "/Users/pedro_bermejo/Epam-OneDrive/OneDrive - EPAM/Maestria/retinopatia-dataset/labels.csv"
-images_path = "/Users/pedro_bermejo/Epam-OneDrive/OneDrive - EPAM/Maestria/retinopatia-dataset/labeled-restricted"
 
-xValues = []
-titleArray = [0, 0, 0, 0, 0]
+def main():
 
-imageNames = [
-    name for name in listdir(images_path)
-    if re.match(r'[\w,\d]+\.[json|JSON]{4}', name)
-]
+    json_paths = []
+    folder_counter = {}
+    total_images = 0
 
-for name in imageNames:
-    with open(labels_path, "r") as infile:
-        reader = csv.reader(infile)
-        #next(reader)
-        find = splitext(name)[0]
-        for line in reader:
-            if  find == line[0]:
-                xValues.append(line[1])
-                titleArray[int(line[1])] += 1
-                break
-                
-title = '0: ' + str(titleArray[0]) + \
-    ', 1: ' + str(titleArray[1]) + \
-    ', 2: ' + str(titleArray[2]) + \
-    ', 3: ' + str(titleArray[3]) + \
-    ', 4: ' + str(titleArray[4]) + \
-    ', Total: ' + str(len(xValues))
+    for dir in listdir(os.path.join(os.getcwd(), args.path_datasets)):
+        if dir != '.DS_Store' and '.png' not in dir:
+            for subdir in listdir(os.path.join(os.getcwd(), args.path_datasets, dir)):
+                if subdir != '.DS_Store':
+                    for name in listdir(os.path.join(os.getcwd(), args.path_datasets, dir, subdir)):
+                        if re.match(r'[\w,\d]+\.[json|JSON]{4}', name):
+                            json_paths.append(os.path.join(os.getcwd(), args.path_datasets, dir, subdir, name))
+                        if re.match(r'[\w,\d]+\.[jpg|png]{3}', name):
+                            total_images = total_images + 1
+                            if folder_counter.get(dir + '_' + subdir):
+                                folder_counter[dir + '_' + subdir] = folder_counter.get(dir + '_' + subdir) + 1
+                            else:
+                                folder_counter[dir + '_' + subdir] = 1
 
-bin_values, bin_labels = np.histogram(xValues, [0, 1, 2, 3, 4, 5])
+    label_counter = {}
+    total_json = 0
 
-print(title)
-print(len(xValues))
-print(bin_values)
-print(bin_labels)
+    for json_name in json_paths:
+        total_json = total_json + 1
+        with open(json_name, 'r') as f:
+            data = json.load(f)
+            for key in data.keys():
+                if label_counter.get(key):
+                    label_counter[key] = label_counter.get(key) + int(data[key])
+                else:
+                    label_counter[key] = int(data[key])
 
-all_files = glob.glob(images_path + '/*.json')
+    print("Total json files: ", total_json)
+    print("Labels: ", label_counter)
+    print("Total images: ", total_images)
+    print("Folders: ", folder_counter)
 
-listDF = []
 
-for filename in all_files:
-    with open(filename) as f:
-        data = json.load(f)
-        df = pd.DataFrame(data, index=[0])
-        listDF.append(df)
-
-frame = pd.concat(listDF, ignore_index=True)
-
-print(frame.head())
-print(frame.shape)
-
-groupFrameZ = (frame == 0).sum(axis=0)
-groupFrameO = (frame == 1).sum(axis=0)
-
-resultDF = pd.concat([pd.DataFrame(groupFrameZ), 
-    pd.DataFrame(groupFrameO).rename(columns={0: 1})], axis=1)
-
-resultDF['Categoría'] = resultDF.index
-
-print(resultDF)
-
-sns.barplot(x=[0, 1, 2, 3, 4], y=bin_values)
-plt.title(title)
-plt.show()
-
-test_data_melted = pd.melt(resultDF, id_vars='Categoría', var_name="Valor", value_name="Imagenes")
-sns.barplot(x='Categoría', y="Imagenes", hue="Valor", data=test_data_melted)
-
-plt.show()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--path-datasets', help='Path to datasets')
+    args = parser.parse_args()
+    main()
 

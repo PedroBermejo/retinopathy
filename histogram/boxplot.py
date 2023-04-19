@@ -21,8 +21,7 @@ def main():
     for model_name in models:
         template_df = []
         for dataset_name in datasets:
-            max_df = pd.DataFrame({replace[dataset_name]: df[[f'{model_name}_{dataset_name}_softmax_left',
-                                   f'{model_name}_{dataset_name}_softmax_right']].max(axis=1)})
+            max_df = pd.DataFrame({replace[dataset_name]: df[[f'{model_name}_{dataset_name}_softmax_left']].max(axis=1)})
 
             if len(template_df) == 0:
                 template_df = max_df

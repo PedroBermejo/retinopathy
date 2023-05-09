@@ -9,10 +9,10 @@ def main():
 
     models = ['inception', 'mobilenet', 'resnet', 'vgg']
     datasets = ['good_images', 'blur', 'gauss_noise', 'random_fog']
-    replace = {'good_images': 'good',
-               'blur': 'blur',
-               'gauss_noise': 'noise',
-               'random_fog': 'fog'}
+    replace = {'good_images': 'referencia',
+               'blur': 'borrosidad',
+               'gauss_noise': 'ruido',
+               'random_fog': 'niebla'}
     colors = ['red', 'green', 'blue', 'orange']
 
     fig, ax = plt.subplots(ncols=4, figsize=(10, 5))
@@ -32,9 +32,16 @@ def main():
         ax[i].set_title(model_name)
         i = i + 1
 
+    ax[0].set_ylabel('Intervalo de confianza')
+
+    for ax_i in ax:
+        for tick in ax_i.get_xticklabels():
+            tick.set_rotation(45)
+
     fig.text(0.04, 0.5, '', va='center', rotation='vertical')
     plt.tight_layout()
     plt.show()
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

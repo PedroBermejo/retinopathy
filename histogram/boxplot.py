@@ -8,6 +8,11 @@ def main():
     df = pd.read_csv(os.path.join(os.getcwd(), args.path_predicts))
 
     models = ['inception', 'mobilenet', 'resnet', 'vgg']
+    models_replace = {
+        'inception': 'InceptionV3',
+        'mobilenet': 'MobilenetV2',
+        'resnet': 'Resnet50',
+        'vgg': 'Vgg19'}
     datasets = ['good_images', 'blur', 'gauss_noise', 'random_fog']
     replace = {'good_images': 'referencia',
                'blur': 'borrosidad',
@@ -29,7 +34,7 @@ def main():
                 template_df = max_df.join(template_df, how='inner')
 
         template_df.boxplot(ax=ax[i], column=list(replace.values()))
-        ax[i].set_title(model_name)
+        ax[i].set_title(models_replace[model_name])
         i = i + 1
 
     ax[0].set_ylabel('Intervalo de confianza')
